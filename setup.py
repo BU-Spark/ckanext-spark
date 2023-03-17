@@ -2,6 +2,10 @@
 from setuptools import setup
 
 setup(
+    entry_points = """
+        [ckan.plugins]
+        spark=ckanext.spark.plugin:SparkPlugin
+    """,
     # If you are changing from the default layout of your extension, you may
     # have to change the message extractors, you can read more about babel
     # message extraction at
