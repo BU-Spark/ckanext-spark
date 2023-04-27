@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Data at Spark!</title>
+    <style>
+       /* .nav-item{
+         color: aliceblue;
+       } */
+    </style>
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.css"
+    rel="stylesheet"
+  />
+  <script
+    type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.2.0/mdb.min.js"
+  ></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="header" style="position:relative">
+        <nav class="navbar navbar-expand-lg  bg-dark" >
+          <img src="https://www.bu.edu/spark/files/2017/04/spark-logo-round.png" style="z-index: 0;" height="100px" width="100px">
+          <div class="search" style="display: flex;
+        flex-flow: column;
+        justify-content: center;
+        width: 20%;
+        margin-left: 2vw;">
+            <input type="text" class="form-control" style="background-color:#00A99E ;border-radius: 10%;color: black;" placeholder="Search" >
+        </div> 
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" style="background: white;" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarSupportedContent" style="justify-content:flex-end;height:10vh">
+              <ul class="navbar-nav mr-auto" style="color: aliceblue;">
+                <li class="nav-item active">
+                  <a class="nav-link" style="color: aliceblue;" href="#">Organizations</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" style="color: aliceblue;" href="#">Datasets</a>
+                </li>
+                
+                <li class="nav-item">
+                  <a class="nav-link disabled"  style="color: aliceblue;" href="#">About</a>
+                </li>
+              </ul>
+            </div>
+            
+          </nav>
+          <!-- <div class="image" style="display:flex;justify-content:center;top:40px;margin-top: -75px;">
+            <img src="https://www.bu.edu/spark/files/2017/04/spark-logo-round.png" style="z-index: 0;" height="150px" width="150px">
+          </div> -->
+          
+        <!-- <div class="search" style="height:40vh;display: flex;
+        flex-flow: column;
+        justify-content: center;
+        width: 50%;
+        margin-left: 25%;">
+            <input type="text" class="form-control" style="background-color: black;border-radius: 10%;" placeholder="Search" >
+        </div> -->
+
+        </div>
+        <div class="card-wrap" style="background-color: black;">
+            <h1 style="text-align:center;color:aliceblue;padding-top:60px;margin-bottom:60px">Featured (Topic)</h1>
+            <div class="featured container" style="display:flex;flex-wrap: wrap;justify-content: space-evenly;">
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+                    
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+                            
+                        
+            </div>
+            <h1 style="text-align:center;color:aliceblue;margin-top:60px;margin-bottom:60px">Popular Datasets</h1>
+            <div class="popular container" style="display:flex;flex-wrap:wrap;justify-content:space-evenly;padding-bottom:60px">
+                
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+                    
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+                <div class="cards">
+                    <div class="card hover-shadow ripple" id="card-detaill" style="text-align:center">
+                        <div class="card-images hover-zoom">
+                        </div>
+                      <div class="card-content hover-zoom" >
+                        <span class="card-title" style="text-align:center;margin-bottom:20px">Title</span>
+                        <h5 style="padding-bottom:30px;margin-top:20px"> Description</h5>
+                        </div>
+                      </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="footer" style="height:40vh">
+
+        </div>
+        <!-- Jumbotron -->
+        <!-- <div class="p-5 text-center bg-light"> -->
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+  
