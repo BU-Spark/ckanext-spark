@@ -1,18 +1,21 @@
 <div role="main">
 	{#  <div class="main hero">#}
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          {% block promoted %}
+  <div class="container">
+    <div class="grid-container">
+	   <div class="row">
+	   <div class="grid-child">
+          {% block introtext %}
             {% snippet 'snippets/indexlayout.html' %}
           {% endblock %}
-        </div>
-        <div class="col-md-6">
+	   </div>
+	    <div class="grid-child">
           {% block search %}
             {% snippet 'home/snippets/search.html', search_facets=search_facets %}
           {% endblock %}
+	    </div>
         </div>
-      </div>
+    </div>
+      
       {# </div>#}
   </div>
   
