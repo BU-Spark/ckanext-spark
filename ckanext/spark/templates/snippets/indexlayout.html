@@ -1,0 +1,22 @@
+  <div>
+      <h1 class="page-heading">{{ _("WELCOME TO<br>DATA@SPARK!") }}</h1>
+      <div class="text-block">
+      <p>
+        {% trans %}This is a consolidated site of all of SPARK's datasets
+        Feel free to explore, understand and contribute to our ever increasing store of information!
+        {% endtrans %}
+      </p>
+      </div>
+  </div>
+
+  {% block home_image %}
+    <section class="featured media-overlay hidden-xs">
+      <h2 class="media-heading">{% block home_image_caption %}{{ _("This is a featured section") }}{% endblock %}</h2>
+      {% block home_image_content %}
+        <a class="media-image" href="#">
+          <img class="img-fluid" src="{{ h.url_for_static('/base/images/placeholder-420x220.png') }}" alt="Placeholder" />
+        </a>
+      {% endblock %}
+    </section>
+  {% endblock %}
+</div>

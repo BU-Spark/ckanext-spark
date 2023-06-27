@@ -1,15 +1,51 @@
 .account-masthead{
-	background-color: #00A99E;!important;
+	background-color: #00a99e !important;
 }
 .masthead{
-	background-color: rgb(0, 0, 0)!important; 
+	background-color: rgb(255, 255, 255)!important;
+        border-bottom: 1px solid #000000;
+	color: black !important;
+ 		
+}
+.page-heading {
+    	font-size: 70px;
+    	margin-top: 90px;
+    	margin-bottom: 50px;
+}
+.site-search {
+    margin-inline-start: 200px;
+}
+#field-sitewide-search.form-control.me-2 {
+	border-radius: 20px;
+	background-color: #00a99e;
+        color: #FFFFFF;
+	width: 300px;
+}
+#field-sitewide-search::placeholder {
+  	text-align: right;
+  	color: #FFFFFF;
+}
+.vertical-line {
+  width: 1px;
+  height: 30px; 
+  color: #00a99e;
+  background-color: #00a99e;
+  margin: 0 10px; /* Adjust the margin as needed */
+}
+.masthead .main-navbar ul li a{
+        color: #00a99e !important;
+	font-family: Verdana, sans-serif !important;
+}
+.text-block {
+        font-family: Verdana, sans-serif !important;
+	color: #95958e;
 }
 
 .main{
-	background: linear-gradient(white)!important; 
+        background-color: rgb(255, 255, 255)!important;
 	height: auto;
 }
 .main-hero{
-          background: white;
+        background-color: rgb(255, 255, 255)!important;
 }
 
