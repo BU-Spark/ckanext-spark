@@ -13,12 +13,12 @@
   </div>
 
   {% block home_image %}
-    <section class="featured media-overlay hidden-xs">
-      <h2 class="media-heading">{% block home_image_caption %}{{ _("This is a featured section") }}{% endblock %}</h2>
+   <section class="featured media-overlay hidden-xs">
+	     
       {% block home_image_content %}
-        <a class="media-image" href="#">
+      {# <a class="media-image" href="#">
           <img class="img-fluid" src="{{ h.url_for_static('/base/images/placeholder-420x220.png') }}" alt="Placeholder" />
-        </a>
+	</a>#}
       {% endblock %}
     </section>
   {% endblock %}

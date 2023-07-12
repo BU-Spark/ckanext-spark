@@ -1,5 +1,4 @@
 <div role="main">
-	{#  <div class="main hero">#}
   <div class="container">
     <div class="grid-container">
 	   <div class="row">
@@ -41,14 +40,9 @@
   <div class="tab-content" id="tab1-featured">
     <h2>Tab 1 Content</h2>
     <div class="col-md-6">
-          {# Note: this featured_group block is used as an example in the theming
-             tutorial in the docs! If you change this code, be sure to check
-             whether you need to update the docs. #}
-          {# Start template block example. #}
           {% block featured_group %}
             {% snippet 'home/snippets/featured_group.html' %}
           {% endblock %}
-          {# End template block example. #}
         </div>
         <div class="col-md-6">
           {% block featured_organization %}

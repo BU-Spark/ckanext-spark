@@ -152,11 +152,18 @@ img, svg {
     	max-height: 70px;
 }
 .site-footer a {
-    color: #000000;;
+    	color: #000000;;
 }
 .site-footer label, .site-footer small, .site-footer .small {
-    color: #000000;
+    	color: #000000;
 }
 .btn, label {
-    font-weight: normal;
+    	font-weight: normal;
+}
+.footer-social-links a img {
+	height: 40px;
+	max-width: 50px;
+}
+.about-link-footer {
+        font-weight: bold;
 }
