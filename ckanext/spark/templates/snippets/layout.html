@@ -25,15 +25,15 @@
 	</div>
   </div>
 
+  {% asset 'spark/index_navigation_tabs' %}
 
   <div class="index-layout-sections">
    <div class="container">
-{% asset 'fantastic/index_navigation_tabs.js' %}
-<div class="tab-container">
-  <div class="tab active" data-module="index_navigation_tabs" data-tab="tab1-featured">Featured</div>
-  <div class="tab" data-module="index_navigation_tabs" data-tab="tab2-popular">Popular</div>
-  <div class="tab" data-module="index_navigation_tabs" data-tab="tab3-datasets">Datasets</div>
-  <div class="tab" data-module="index_navigation_tabs" data-tab="tab4-topics">Topics</div>
+        <div class="tab-container">
+  <div class="tab active index_navigation_tabs" data-module="index_navigation_tabs"  data-module-tab="tab1-featured">Featured</div>
+  <div class="tab index_navigation_tabs" data-module="index_navigation_tabs" data-module-tab="tab2-popular">Popular</div>
+  <div class="tab index_navigation_tabs" data-module="index_navigation_tabs" data-module-tab="tab3-datasets">Datasets</div>
+  <div class="tab index_navigation_tabs" data-module="index_navigation_tabs" data-module-tab="tab4-topics">Topics</div>
 </div>
 
 
@@ -65,5 +65,4 @@
     <h2>Tab 4 Content</h2>
     <p>This is the content of tab 4.</p>
   </div>
-
 </div>
