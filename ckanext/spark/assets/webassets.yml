@@ -12,8 +12,3 @@
 #   output: ckanext-spark/%(version)s-spark.css
 #   contents:
 #     - css/spark.css
-index_navigation_tabs:
- contents:
-  - index_navigation_tabs.js
- filters: rjsmin
- output: index_navigation_tabs.js

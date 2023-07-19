@@ -1,4 +1,4 @@
-ckan.module('index_navigation_tabs', function ($) {
+ ckan.module('index_navigation_tabs', function ($) {
  return {
    initialize: function () {
      // Hide all tab content
