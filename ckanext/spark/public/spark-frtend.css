@@ -1,9 +1,32 @@
+[role=main], .main{
+	background-color: #00A99E;
+	font-family: "Montserrat";
+	font-size: 15px;
+}
 .account-masthead{
-	background-color: #00a99e !important;
+	background-color: #00a99e;
+	text-transform: uppercase;
+   	letter-spacing: 1.5px;
+	color: #ffffff;
+	border-bottom: 2px solid #00a99e;
+}
+.account-masthead .account ul li a{
+    	color: #ffffff;
+    	font-weight: normal;
+    	font-size: 14px;
+    	/*font-family: Verdana, sans-serif;*/
+        font-family: “Montserrat”, sans-serif;
+
+}
+.account-masthead .account ul li{
+	display: block;
+  	float: left; 
+  	border: none;
 }
 .masthead{
-	background-color: rgb(255, 255, 255)!important;
-        border-bottom: 1px solid #000000;
+	font-family: Verdana, sans-serif;
+	background-color: white;
+        border-bottom: none;
 	color: black !important;
  		
 }
@@ -11,51 +34,75 @@
     	max-height: 70px;
 }
 .page-heading {
+	font-family: system-ui;
     	font-size: 70px;
     	margin-top: 90px;
     	margin-bottom: 50px;
+	color: #ffffff; 
 }
+.masthead .main-navbar ul li:hover a, .masthead .main-navbar ul li:focus a, .masthead .main-navbar ul li.active a {
+	border-radius: unset;
+	background-color: #ffffff;
+	color: black;
+}
+button.btn[type="submit"] {
+	padding: 0;
+}
+
 .site-search {
-    	margin-inline-start: 200px;
+    	margin-inline-start: 5px;
 }
 #field-sitewide-search.form-control.me-2 {
 	border-radius: 20px;
-	background-color: #00a99e;
-        color: #FFFFFF;
-	width: 300px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	background-color: white;
+        color: black;
+	width: 200px;
+	box-shadow: none;
 }
 #field-sitewide-search::placeholder {
   	text-align: right;
   	color: #FFFFFF;
 }
-.vertical-line {
-  	width: 1px;
-  	height: 30px; 
-  	color: #00a99e;
-  	background-color: #00a99e;
-  	margin: 0 10px;
+.container, .container-fluid, .container-xxl, .container-xl, .container-lg, .container-md, .container-sm{
+        font-family: Verdana, sans-serif;
+	padding-bottom: 5px;
 }
 .masthead .main-navbar ul li a{
-        color: #00a99e !important;
-	font-family: Verdana, sans-serif !important;
+	font-family: Verdana, sans-serif;
+        color: #989898;
+	text-transform: uppercase;
+	font-size: 13px;
+	padding: 0.6rem 0.5rem;
 }
 .header-tag-line {
   	margin-bottom: 50px;
 	margin-top: 60px;
-	color: #555551;
+	color: #ffffff;
 }
 .text-block {
         font-family: Verdana, sans-serif !important;
-	color: #95958e;
+	color: #aaaaaa;
 }
 
 .main{
-        background-color: rgb(255, 255, 255)!important;
+        background-color: black;
 	height: auto;
+	color: #00a99e;
 }
 .main-hero{
         background-color: rgb(255, 255, 255)!important;
+}
+.toolbar a {
+	text-transform: uppercase;
+	font-family: Verdana, sans-serif;
+
+}
+.toolbar .breadcrumb a {
+	color: white;
+	font-size: 14px;
+}
+.dataset-heading a {
+	color: #aaaaaa;
 }
 .grid-container {
     	display: grid;
@@ -69,44 +116,60 @@ div.module-search.card.box {
   	margin-bottom: 20px;
 }
 .homepage .module-search .search-form {
-    	background-color: #00a99e;
-    	border-radius: 20px;
+    	background-color: #507f73;
    	font-family: Verdana, sans-serif;
 	padding: 20px;
 }
-.homepage .module-search {
-    	color: #fff;
+.homepage .module-search{
+    	color: #ffffff;
  	padding: 0;
 	border-width: 0;
 	border-style: none;
+}
+.homepage .module-search .tags{
+	background-color: #ffffff;
+	color: #00A99E;
+}
+.homepage .module-search{
+	margin-top: 0px;
+}
+.homepage .module-search .search-form input {
+	font-size: 14px;
+	padding: 8px;
 }
 .heading-headline {
   	text-align: center;
   	margin-top: 70px;
         margin-bottom: 50px;
-  	color: #00a99e;
+  	color: #000000;
 	font-size: 35px;
+	font-weight: bold;
 }
-
+.headline-section{
+	background-color: #ffffff;
+}
 .data-headline {
   	text-align: center;
   	margin-top: 30px;
         margin-bottom: 50px;
-  	text-align-last: justify;
-  	color: #555551;
+  	color: #000000;
+}
+.index-layout-sections{
+	background-color: white;
+	color: #000000;
+	font-weight: bold;
+	border-top: 4px solid #00a99e;
+    	border-bottom: 4px solid #00a99e; 
 }
 .layout-header-links {
-  	display: flex;
-  	justify-content: space-between;
-}
-
-.layout-header-links {
-  	color: #95958e;
   	text-decoration: none;
+	color: #000000;
+	display: flex;
+        justify-content: space-between;
 }
 
 .layout-header-links:focus {
-  	color: #555551;
+  	color: #00a99e;
 }
 
 .layout-data {
@@ -118,8 +181,8 @@ div.module-search.card.box {
 }
 
 .site-footer{
-	background: #00a99e;
-	color: #000000;
+	background: white;/*#00a99e;*/
+	color: black; /* #000000;*/
 }
 .tab-container {
       	display: flex;
@@ -127,11 +190,11 @@ div.module-search.card.box {
 }
 
 .tab {
-	font-size: 15px;
+	font-size: 20px;
       	cursor: pointer;
       	padding: 5px;
       	border-bottom: 2px solid transparent;
-	color: #a7a7a3;
+	color: #000000;
 	font-family: Verdana, sans-serif !important;
 }
 
@@ -140,30 +203,58 @@ div.module-search.card.box {
 }
 
 .tab:active {
-      	border-bottom: 2px solid #000000;
-	color: #000000;
+      	border-bottom: 2px solid #00A99E;
+	color: #00A99E;
 }
-
+.menu-head-content{
+	color: #ffffff;
+}
 .tab-content {
       	display: none; /* Hide all tab content by default */
 }
 img, svg {
-    	vertical-align: initial;
-    	max-height: 70px;
+    	vertical-align: text-bottom;
+    	max-height: 600px;
 }
 .site-footer a {
-    	color: #000000;;
+    	color: black;
 }
 .site-footer label, .site-footer small, .site-footer .small {
-    	color: #000000;
+    	color: black;
 }
 .btn, label {
     	font-weight: normal;
 }
 .footer-social-links a img {
-	height: 40px;
-	max-width: 50px;
+	height: 50px;
+	max-width: 60px;
+}
+.footer-image-logo{
+	height: 100px;
+	max-width: 300px;
 }
 .about-link-footer {
+	color: #00a99e;
         font-weight: bold;
+}
+div.notes.embedded-content {
+	color: #D3D3D3;
+}
+.page-header.module-content{
+	background-color: black;
+}
+.secondary {
+	font-family: Verdana, sans-serif;
+        font-size: 15px;
+}
+.content-wrapper-header{
+	display: flex;
+  	justify-content: space-between;
+}
+.content-wrapper-right {
+  	flex: 1; /* Take up remaining space */
+  	padding: 20px; /* Add padding for spacing */
+}
+.content-wrapper-middle {
+  flex: 1; /* Take up remaining space */
 }

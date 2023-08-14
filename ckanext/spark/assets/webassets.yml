@@ -12,3 +12,10 @@
 #   output: ckanext-spark/%(version)s-spark.css
 #   contents:
 #     - css/spark.css
+spark_theme:
+  contents:
+    - spark_theme.js
+
+example_theme_popover:
+  contents:
+    - example_theme_popover.js

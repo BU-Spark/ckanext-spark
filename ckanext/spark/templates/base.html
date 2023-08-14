@@ -4,4 +4,7 @@
 	<link rel="stylesheet" href="/spark-frtend.css" />
 	{{ super() }}
 {% endblock %}
-
+{% block scripts %}
+	{% asset 'spark/spark_theme' %}
+	{% asset 'spark/example_theme_popover' %}
+{% endblock %}

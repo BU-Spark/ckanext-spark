@@ -25,44 +25,41 @@
 	</div>
   </div>
 
-  {% asset 'spark/index_navigation_tabs' %}
+
 
   <div class="index-layout-sections">
    <div class="container">
-        <div class="tab-container">
-  <div class="tab active index_navigation_tabs" data-module="index_navigation_tabs"  data-module-tab="tab1-featured">Featured</div>
-  <div class="tab index_navigation_tabs" data-module="index_navigation_tabs" data-module-tab="tab2-popular">Popular</div>
-  <div class="tab index_navigation_tabs" data-module="index_navigation_tabs" data-module-tab="tab3-datasets">Datasets</div>
-  <div class="tab index_navigation_tabs" data-module="index_navigation_tabs" data-module-tab="tab4-topics">Topics</div>
+	   <div class="tab-container" data-module="spark_theme" data-module-tab="tab1-featured">
+  <div class="tab active" data-tab-content="tab1-featured">Featured</div>
+  <div class="tab" data-tab-content="tab2-popular">Popular</div>
+  <div class="tab" data-tab-content="tab3-datasets">Datasets</div>
+  <div class="tab" data-tab-content="tab4-topics">Topics</div>
 </div>
 
-
-  <div class="tab-content" id="tab1-featured">
-    <h2>Tab 1 Content</h2>
-    <div class="col-md-6">
-          {% block featured_group %}
-            {% snippet 'home/snippets/featured_group.html' %}
-          {% endblock %}
-        </div>
-        <div class="col-md-6">
-          {% block featured_organization %}
-            {% snippet 'home/snippets/featured_organization.html' %}
-          {% endblock %}
-        </div>
+<div class="tab-content" id="tab1-featured" data-tab-content="tab1-featured">
+    <p>This is the content of tab 1.</p>
+    {% for dataset in datasets %}
+  <div class="dataset-item">
+    <h3>{{ dataset.title }}</h3>
+    <p>{{ dataset.description }}</p>
+    {% if dataset.extras.get('featured', False) == 'true' %}
+      <span class="featured-badge">Featured</span>
+    {% endif %}
   </div>
+{% endfor %}
+</div>
 
-  <div class="tab-content" id="tab2-popular">
-    <h2>Tab 2 Content</h2>
+<div class="tab-content" id="tab2-popular" data-tab-content="tab2-popular">
     <p>This is the content of tab 2.</p>
-  </div>
+</div>
 
-  <div class="tab-content" id="tab3-datasets">
-    <h2>Tab 3 Content</h2>
+<div class="tab-content" id="tab3-datasets" data-tab-content="tab3-datasets">
     <p>This is the content of tab 3.</p>
-  </div>
+</div>
 
-  <div class="tab-content" id="tab4-topics">
-    <h2>Tab 4 Content</h2>
+<div class="tab-content" id="tab4-topics" data-tab-content="tab4-topics">
     <p>This is the content of tab 4.</p>
-  </div>
+</div>
+
+   </div>
 </div>
