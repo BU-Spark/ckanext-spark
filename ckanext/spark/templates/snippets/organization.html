@@ -1,0 +1,38 @@
+{% block info %}
+  <div class="module module-narrow module-shallow context-info">
+    <section class="module-content">
+      {% block inner %}
+      {% block image %}
+      {% endblock %}
+      {% block heading %}
+      <h5 class="org-heading">ORGANIZATION</h5>
+	<div class=“org-title”>{{ organization.title or organization.name }}
+        {% if organization.state == 'deleted' %}
+          [{{ _('Deleted') }}]
+        {% endif %}
+      </div>     
+
+      {% endblock %}
+      {% block description %}
+      {% if organization.description %}
+        <p class="description">
+          {{ h.markdown_extract(organization.description, 180) }}
+      {% else %}
+        <p class="empty">{{ h.humanize_entity_type('organization', organization.type, 'no description') or _('There is no description for this organization') }}</p>
+      {% endif %}
+      {% endblock %}
+      {% if show_nums %}
+        {% block nums %}
+        
+        
+	{% endblock %}
+        {% block follow %}
+        <div class="follow_button">
+          {{ h.follow_button('group', organization.id) }}
+        </div>
+        {% endblock %}
+      {% endif %}
+      {% endblock %}
+    </section>
+  </div>
+  {% endblock %}

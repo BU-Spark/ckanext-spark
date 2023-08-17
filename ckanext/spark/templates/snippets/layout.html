@@ -1,65 +1,88 @@
-<div role="main">
-  <div class="container">
-    <div class="grid-container">
-	   <div class="row">
-	   <div class="grid-child">
-          {% block introtext %}
-            {% snippet 'snippets/indexlayout.html' %}
-          {% endblock %}
-	   </div>
-	    <div class="grid-child">
-          {% block search %}
-            {% snippet 'home/snippets/search.html', search_facets=search_facets %}
-          {% endblock %}
-	    </div>
+<div class="home-page-main" role="main">
+    <div class="container">
+        <div class="grid-container">
+            <div class="row">
+                <div class="grid-child">
+                    {% block introtext %}
+                        {% snippet 'snippets/indexlayout.html' %}
+                    {% endblock %}
+                </div>
+                <div class="grid-child">
+                    {% block search %}
+                        {% snippet 'home/snippets/search.html', search_facets=search_facets %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+
+        {# </div>#}
+
+        <div class="headline-section">
+            <div class="container">
+                <div class="heading-headline">HEADLINE</div>
+                <div class="data-headline">BU SPARK! IS A TECHNOLOGY INCUBATOR AND EXPERIENTIAL LEARNING LAB FOR STUDENT LED COMPUTATIONAL AND DATA DRIVEN PROJECTS AT BOSTON UNIVERSITY.</div>
+            </div>
+        </div>
+
+        <div class="index-layout-sections">
+            <div class="container">
+                <div class="tab-container" data-module="spark_theme" data-module-tab="tab1-featured">
+                    <div class="tab active" data-tab-content="tab1-featured">Featured</div>
+                    <div class="tab" data-tab-content="tab2-popular">Popular</div>
+                    <div class="tab" data-tab-content="tab3-datasets">Datasets</div>
+                    <div class="tab" data-tab-content="tab4-topics">Topics</div>
+                </div>
+
+                <div class="tab-content" id="tab1-featured" data-tab-content="tab1-featured">
+                    <div class="home-card-container">
+                        {% for package in h.spark_featured_datasets() %}
+                            <div class="home-card">
+                                <a href="{{ h.url_for(controller='dataset', action='read', id=package.id) }}">
+                                    <div class="home-card-content">
+                                        {{ package}}
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button id="showMoreBtn">Show More</button>
+                </div>
+
+                <div class="tab-content" id="tab2-popular" data-tab-content="tab2-popular">
+                <div class="home-card-container">
+                        {% for package in h.spark_popular_datasets() %}
+                            <div class="home-card">
+                                <a href="{{ h.url_for(controller='dataset', action='read', id=package.id) }}">
+                                    <div class="home-card-content">
+                                        {{ package}}
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+		</div>
+
+                <div class="tab-content" id="tab3-datasets" data-tab-content="tab3-datasets">
+                    <div class="home-card-container">
+                        {% for package in h.spark_all_packages() %}
+                            <div class="home-card">
+                                <a href="{{ h.url_for(controller='dataset', action='read', id=package.id) }}">
+                                    <div class="home-card-content">
+                                        {{ package}}
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab4-topics" data-tab-content="tab4-topics">
+                    <p>This is the content of tab 4.</p>
+                </div>
+            </div>
         </div>
     </div>
-      
-      {# </div>#}
-
-  <div class="headline-section">
-	<div class="container">
-		<div class = "heading-headline">HEADLINE</div>
-		<div class="data-headline">BU SPARK! IS A TECHNOLOGY INCUBATOR AND EXPERIENTIAL LEARNING LAB FOR STUDENT LED COMPUTATIONAL AND DATA DRIVEN PROJECTS AT BOSTON UNIVERSITY.
-		</div>
-	</div>
-  </div>
-
-
-
-  <div class="index-layout-sections">
-   <div class="container">
-	   <div class="tab-container" data-module="spark_theme" data-module-tab="tab1-featured">
-  <div class="tab active" data-tab-content="tab1-featured">Featured</div>
-  <div class="tab" data-tab-content="tab2-popular">Popular</div>
-  <div class="tab" data-tab-content="tab3-datasets">Datasets</div>
-  <div class="tab" data-tab-content="tab4-topics">Topics</div>
 </div>
 
-<div class="tab-content" id="tab1-featured" data-tab-content="tab1-featured">
-    <p>This is the content of tab 1.</p>
-    {% for dataset in datasets %}
-  <div class="dataset-item">
-    <h3>{{ dataset.title }}</h3>
-    <p>{{ dataset.description }}</p>
-    {% if dataset.extras.get('featured', False) == 'true' %}
-      <span class="featured-badge">Featured</span>
-    {% endif %}
-  </div>
-{% endfor %}
-</div>
 
-<div class="tab-content" id="tab2-popular" data-tab-content="tab2-popular">
-    <p>This is the content of tab 2.</p>
-</div>
-
-<div class="tab-content" id="tab3-datasets" data-tab-content="tab3-datasets">
-    <p>This is the content of tab 3.</p>
-</div>
-
-<div class="tab-content" id="tab4-topics" data-tab-content="tab4-topics">
-    <p>This is the content of tab 4.</p>
-</div>
-
-   </div>
-</div>
