@@ -21,6 +21,7 @@
         <p class="empty">{{ h.humanize_entity_type('organization', organization.type, 'no description') or _('There is no description for this organization') }}</p>
       {% endif %}
       {% endblock %}
+
       {% if show_nums %}
         {% block nums %}
         

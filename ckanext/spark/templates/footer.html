@@ -11,22 +11,24 @@
       </a>
     </div>
     <div class="col-md-10">
-      <div class="footer-links">
-        <p>BU Spark! is a technology incubator and experimental</p>
-        <p>learning lab for student-led computational and data-</p>
-        <p>driven projects at Boston University.</p>
-      </div>
-      <div class="footer-social-links text-right">
-        <a href="https://www.linkedin.com/company/bu-spark" target="_blank">
-          <img src="{{ h.url_for_static('images/linkedin_icon.png') }}" alt="LinkedIn">
-        </a>
-        <a href="https://www.instagram.com/bu_spark/" target="_blank">
-          <img src="{{ h.url_for_static('images/instagram_icon.png') }}" alt="Instagram">
-        </a>
-        <a href="https://twitter.com/bu_spark?lang=en" target="_blank">
-          <img src="{{ h.url_for_static('images/twitter_icon.png') }}" alt="Twitter">
-        </a>
-      </div>
+        <a style="color: blue;" class="footer-logo" href="https://www.bu.edu/spark/" target="_blank">https://www.bu.edu/spark/</a>
+        <div class="footer-social-links text-right">
+            <a href="https://www.linkedin.com/company/bu-spark" target="_blank">
+                <img src="{{ h.url_for_static('images/linkedin.svg') }}" alt="LinkedIn">
+            </a>
+            <a href="https://www.instagram.com/bu_spark/" target="_blank">
+                <img src="{{ h.url_for_static('images/instagram.svg') }}" alt="Instagram">
+            </a>
+            <a href="https://twitter.com/bu_spark?lang=en" target="_blank">
+                <img src="{{ h.url_for_static('images/twitter.svg') }}" alt="Twitter">
+            </a>
+        </div>
+        <div class="footer-links">
+            <p>BU Spark! is a technology incubator and experimental</p>
+            <p>learning lab for student-led computational and data-</p>
+            <p>driven projects at Boston University.</p>
+        </div>
+
     </div>
   </div>
 </div>
@@ -46,4 +48,5 @@
 	
 </div>
 {% endblock %}
+
 

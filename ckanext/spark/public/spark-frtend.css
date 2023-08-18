@@ -10,11 +10,11 @@
 	background-color: #00a99e;
 	text-transform: uppercase;
    	letter-spacing: 1.5px;
-	color: #ffffff;
+	color: #FFFFFF;
 	border-bottom: 2px solid #00a99e;
 }
 .account-masthead .account ul li a{
-    	color: #ffffff;
+    	color: #FFFFFF;
     	font-weight: normal;
     	font-size: 14px;
     	/*font-family: "Plus Jakarta Sans", sans-serif;*/
@@ -28,7 +28,7 @@
 }
 .masthead{
 	font-family: "Plus Jakarta Sans", sans-serif;
-	background-color: #ffffff;
+	background-color: #FFFFFF;
         border-bottom: none;
 	color: black !important;
  		
@@ -36,20 +36,27 @@
 .masthead .navbar .logo img {
     	max-height: 70px;
 }
+.img-socials{
+	height: 30px;
+	vertical-align: middle;
+	padding-right: 20px;
+}
 .page-heading {
 	font-family: system-ui;
     	font-size: 70px;
     	margin-top: 90px;
     	margin-bottom: 50px;
-	color: #ffffff; 
+	color: #FFFFFF; 
 }
 .search-heading{
-	color: #ffffff;
+	color: #FFFFFF;
 }
 .masthead .main-navbar ul li:hover a, .masthead .main-navbar ul li:focus a, .masthead .main-navbar ul li.active a {
-	border-radius: unset;
-	background-color: #ffffff;
-	color: black;
+	color: #00A99E;
+	background-color: transparent;
+	text-decoration: underline;
+    	text-decoration-color: #00A99E;
+	text-decoration-thickness: 3px;
 }
 button.btn[type="submit"] {
 	padding: 0;
@@ -60,7 +67,7 @@ button.btn[type="submit"] {
 }
 #field-sitewide-search.form-control.me-2 {
 	border-radius: 20px;
-	background-color: white;
+	background-color: #FFFFFF;
         color: black;
 	width: 200px;
 	box-shadow: none;
@@ -83,7 +90,7 @@ button.btn[type="submit"] {
 .header-tag-line {
   	margin-bottom: 50px;
 	margin-top: 60px;
-	color: #ffffff;
+	color: #FFFFFF;
 }
 .text-block {
         font-family: "Plus Jakarta Sans", sans-serif !important;
@@ -128,13 +135,13 @@ div.module-search.card.box {
 	padding: 20px;
 }
 .homepage .module-search{
-    	color: #ffffff;
+    	color: #FFFFFF;
  	padding: 0;
 	border-width: 0;
 	border-style: none;
 }
 .homepage .module-search .tags{
-	background-color: #ffffff;
+	background-color: #FFFFFF;
 	color: #00A99E;
 }
 .homepage .module-search{
@@ -153,7 +160,7 @@ div.module-search.card.box {
 	font-weight: bold;
 }
 .headline-section{
-	background-color: #ffffff;
+	background-color: #FFFFFF;
 }
 .data-headline {
   	text-align: center;
@@ -189,7 +196,7 @@ div.module-search.card.box {
 }
 
 .site-footer{
-	background: white;/*#00a99e;*/
+	background: #FFFFFF;/*#00a99e;*/
 	color: black; /* #000000;*/
 }
 .tab-container {
@@ -219,7 +226,7 @@ div.module-search.card.box {
 	color: #00A99E;
 }
 .menu-head-content{
-	color: #ffffff;
+	color: #FFFFFF;
 }
 .tab-content {
       	display: none; /* Hide all tab content by default */
@@ -238,8 +245,12 @@ img, svg {
     	font-weight: normal;
 }
 .footer-social-links a img {
-	height: 50px;
-	max-width: 60px;
+	height: 40px;
+	max-width: 50px;
+	padding-right: 10px;
+}
+.footer-social-links{
+	padding: 20px;
 }
 .footer-image-logo{
 	height: 100px;
@@ -292,7 +303,7 @@ div.notes.embedded-content {
     flex-direction: column; /* Set the card to be a vertical column */
     justify-content: space-between; /* Add space between content inside card */
     align-items: center; /* Align content horizontally in the center */
-    background-color: white;
+    background-color: #FFFFFF;
     
     border: 1px solid #000000;
     border-radius: 8px;
@@ -356,17 +367,44 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
 	text-underline-offset: 10px;
 	text-decoration-thickness: 4px;
 }
+.context-info .description{
+	font-size: 13px;
+}
+.dataset-left-heading{
+	padding-top: 10px;
+	padding-bottom: 0px;
+}
 .org-heading{
 	color: #00A99E;
-	padding: 0px;
+	padding-left: 0px;
+	padding-bottom: 10px;
 }
+.project-desc-heading{
+	color: #00A99E;
+        padding-left: 0px;
+	padding-bottom: 10px;
+}
+.timeframe-heading{
+	color: #00A99E;
+        padding-left: 0px;
+	padding-bottom: 10px;
+}
+
 .org-title{
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
-p {
-	line-height: 2;
-
+.time-frame-desc{
+	padding-top: 10px;
+        padding-bottom: 10px;
+	font-size: 13px;
+	font-family: "Plus Jakarta Sans", sans-serif;
+}
+.project-desc{
+	padding-top: 10px;
+        padding-bottom: 10px;
+	font-size: 13px;
+	font-family: "Plus Jakarta Sans", sans-serif;
 }
 .data-resources-heading{
 	text-decoration: underline;
