@@ -6,7 +6,10 @@ ckan.module('spark_theme', function ($) {
       var tabs = $('.tab');
       var tabContents = $('.tab-content');
 
-      // Event listener for tab clicks
+      var defaultTabContentId = 'tab3-datasets';
+      $('#' + defaultTabContentId).show();
+
+	    // Event listener for tab clicks
       tabs.on('click', function () {
         var tab = $(this);
         var tabContentId = tab.data('tab-content');
