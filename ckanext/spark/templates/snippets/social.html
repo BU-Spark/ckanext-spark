@@ -7,13 +7,13 @@
             <ul class="nav nav-simple">
                 <li class="nav-item">
                     <a style="color: blue;" href="https://twitter.com/share?url={{ current_url }}" target="_blank">
-                        <img class="img-socials" src="{{ h.url_for_static('images/twitter.svg') }}" alt="Twitter">@{{ h.dataset_display_name(pkg) }}
+                        <img class="img-socials" src="{{ h.url_for_static('images/twitter-png.png') }}" alt="Twitter">@{{ h.dataset_display_name(pkg) }}
 {#                    <i class="fa-brands fa-twitter-square"></i> Twitter#}
                     </a></li>
                 <li class="nav-item">
                     <a style="color: blue;" href="https://www.facebook.com/sharer.php?u={{ current_url }}" target="_blank">
 {#                        <i class="fa-brands fa-facebook-square"></i> Facebook#}
-                        <img class="img-socials" src="{{ h.url_for_static('images/facebook_icon.svg') }}" alt="Facebook">@{{ h.dataset_display_name(pkg) }}
+                        <img class="img-socials" src="{{ h.url_for_static('images/facebook-png.png') }}" alt="Facebook">@{{ h.dataset_display_name(pkg) }}
                     </a></li>
             </ul>
         {% endblock %}

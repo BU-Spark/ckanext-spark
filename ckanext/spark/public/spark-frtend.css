@@ -273,6 +273,7 @@ div.notes.embedded-content {
 
 }
 .page-header.module-content{
+	display: none;
 	background-color: #F2F2F2;
 }
 .module-content{
@@ -483,10 +484,15 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
         text-decoration-thickness: 4px;
 }
 .btn-primary{
+	font-family: "Plus Jakarta Sans", sans-serif;
 	color: #00A99E;
 	background-color: #FFFFFF;
 	border-color: #00A99E;
 	border-radius: 20px;
+}
+.btn-primary:hover, .btn-primary:active{
+	background-color: #00A99E;
+    	color: #FFFFFF;
 }
 .notes{
 	margin-bottom: 20px;

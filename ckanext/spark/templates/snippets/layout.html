@@ -15,8 +15,6 @@
             </div>
         </div>
 
-        {# </div>#}
-
         <div class="headline-section">
             <div class="container">
                 <div class="heading-headline">HEADLINE</div>
@@ -29,69 +27,92 @@
                 <div class="tab-container" data-module="spark_theme" data-module-tab="tab1-featured">
                     <div class="tab active" data-tab-content="tab3-datasets">Datasets</div>
                     <div class="tab" data-tab-content="tab2-popular">Popular</div>
-		    <div class="tab" data-tab-content="tab1-featured">Featured</div>
+                    <div class="tab" data-tab-content="tab1-featured">Featured</div>
                     <div class="tab" data-tab-content="tab4-topics">Topics</div>
                 </div>
 
                 <div class="tab-content" id="tab1-featured" data-tab-content="tab1-featured">
                     <div class="home-card-container">
-                        {% for package in h.spark_featured_datasets() %}
+                        {#                        {% for package in h.spark_featured_datasets() %}#}
+                        {% for dataset in h.spark_all_packages() %}
                             <div class="home-card">
-                                <a href="{{ h.url_for(controller='dataset', action='read', id=package.id) }}">
-                                    <div class="home-card-content">
-                                        {{ package}}
-                                    </div>
+                                <div class="card-heading">
+                                    <span class="topic-name">TOPIC NAME</span>
+                                    <span class="topic-date"> | SUMMER 2023</span>
+                                </div>
+                                <div class="home-card-content">
+                                    <p class="dataset-name">{{ dataset.name }}</p>
+                                    <p class="last-updated">Last Updated: <span class="formatted-date">{{ dataset.formatted_date }}</span></p>
+                                </div>
+                                <a href="{{ h.url_for(controller='dataset', action='read', id=dataset.id) }}" class="view-button">
+                                    VIEW
                                 </a>
                             </div>
                         {% endfor %}
                     </div>
-                    <button id="showMoreBtn">Show More</button>
+                    <div class="pagination-controls">
+                        <button class="prev-btn">&lt;</button>
+                        <a href="http://data.buspark.io/dataset/">
+                            <button class="show-more-btn">VIEW MORE</button>
+                        </a>
+                        <button class="next-btn">&gt;</button>
+                    </div>
                 </div>
 
                 <div class="tab-content" id="tab2-popular" data-tab-content="tab2-popular">
-                <div class="home-card-container">
-                        {% for package in h.spark_popular_datasets() %}
+                    <div class="home-card-container">
+                        {#                                <a href="{{ h.url_for(controller='dataset', action='read', id=package.id) }}">#}
+                        {% for dataset in h.spark_all_packages() %}
                             <div class="home-card">
-                                <a href="{{ h.url_for(controller='dataset', action='read', id=package.id) }}">
-                                    <div class="home-card-content">
-                                        {{ package}}
-                                    </div>
+                                <div class="card-heading">
+                                    <span class="topic-name">TOPIC NAME</span>
+                                    <span class="topic-date"> | SUMMER 2023</span>
+                                </div>
+                                <div class="home-card-content">
+                                    <p class="dataset-name">{{ dataset.name }}</p>
+                                    <p class="last-updated">Last Updated: <span class="formatted-date">{{ dataset.formatted_date }}</span></p>
+                                </div>
+                                <a href="{{ h.url_for(controller='dataset', action='read', id=dataset.id) }}" class="view-button">
+                                    VIEW
                                 </a>
                             </div>
                         {% endfor %}
                     </div>
-
-		</div>
-
-
-		
-		<div class="tab-content" id="tab3-datasets" data-tab-content="tab3-datasets">
-    <div class="home-card-container">
-        {% for dataset in h.spark_all_packages() %}
-            <div class="home-card">
-		    <div class="card-heading">
-		    <span class="topic-name">TOPIC NAME</span>
-        <span class="topic-date"> | SUMMER 2023</span>
-		    </div>
-                <div class="home-card-content">
-                    <p class="dataset-name">{{ dataset.name }}</p>
-                    <p class="last-updated">Last Updated: <span class="formatted-date">{{ dataset.formatted_date }}</span></p>
+                    <div class="pagination-controls">
+                        <button class="prev-btn">&lt;</button>
+                        <a href="http://data.buspark.io/dataset/?q=&sort=metadata_modified+desc">
+                            <button class="show-more-btn">VIEW MORE</button>
+                        </a>
+                        <button class="next-btn">&gt;</button>
+                    </div>
                 </div>
-                <a href="{{ h.url_for(controller='dataset', action='read', id=dataset.id) }}" class="view-button">
-                    VIEW
-                </a>
-            </div>
-        {% endfor %}
-    </div>
-    <div class="pagination-controls">
-        <button class="prev-btn">&lt;</button>
-	<a href="http://data.buspark.io/dataset/">
-		<button class="show-more-btn">VIEW MORE</button></a>
 
-	<button class="next-btn">&gt;</button>
-    </div>
-</div>
-
+                <div class="tab-content" id="tab3-datasets" data-tab-content="tab3-datasets">
+                    <div class="home-card-container">
+                        {% for dataset in h.spark_all_packages() %}
+                            <div class="home-card">
+                                <div class="card-heading">
+                                    <span class="topic-name">TOPIC NAME</span>
+                                    <span class="topic-date"> | SUMMER 2023</span>
+                                </div>
+                                <div class="home-card-content">
+                                    <p class="dataset-name">{{ dataset.name }}</p>
+                                    <p class="last-updated">Last Updated: <span class="formatted-date">{{ dataset.formatted_date }}</span></p>
+                                </div>
+                                <a href="{{ h.url_for(controller='dataset', action='read', id=dataset.id) }}" class="view-button">
+                                    VIEW
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="pagination-controls">
+                        <button class="prev-btn">&lt;</button>
+                        <a href="http://data.buspark.io/dataset/">
+                            <button class="show-more-btn">VIEW MORE</button>
+                        </a>
+                        <button class="next-btn">&gt;</button>
+                    </div>
+                </div>
 
                 <div class="tab-content" id="tab4-topics" data-tab-content="tab4-topics">
                     <div class="home-card-container">
@@ -105,10 +126,16 @@
                             </div>
                         {% endfor %}
                     </div>
+                    <div class="pagination-controls">
+                        <button class="prev-btn">&lt;</button>
+                        <a href="http://data.buspark.io/group/">
+                            <button class="show-more-btn">VIEW MORE</button>
+                        </a>
+                        <button class="next-btn">&gt;</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 
