@@ -1,0 +1,52 @@
+{% ckan_extends %}
+
+{% block footer_links %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+            <a class="footer-logo" href="https://www.bu.edu/spark/" target="_blank">
+	    <img class="footer-image-logo" src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}"
+          title="{{ g.site_title }}" />
+      </a>
+    </div>
+    <div class="col-md-10">
+        <a style="color: blue;" class="footer-logo" href="https://www.bu.edu/spark/" target="_blank">https://www.bu.edu/spark/</a>
+        <div class="footer-social-links text-right">
+            <a href="https://www.linkedin.com/company/bu-spark" target="_blank">
+                <img src="{{ h.url_for_static('images/linkedin-png.png') }}" alt="LinkedIn">
+            </a>
+            <a href="https://www.instagram.com/bu_spark/" target="_blank">
+                <img src="{{ h.url_for_static('images/instagram-png.png') }}" alt="Instagram">
+            </a>
+            <a href="https://twitter.com/bu_spark?lang=en" target="_blank">
+                <img src="{{ h.url_for_static('images/twitter-png.png') }}" alt="Twitter">
+            </a>
+        </div>
+        <div class="footer-links">
+            <p>BU Spark! is a technology incubator and experimental</p>
+            <p>learning lab for student-led computational and data-</p>
+            <p>driven projects at Boston University.</p>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block footer_links_ckan %}
+{% endblock %}
+{% block footer_attribution %}
+<div class="spark-right-links">
+	<div class="about-link-footer">
+	
+		<p><a href="{{ h.url_for('home.about') }}">{{ _('About') }}</a></p>
+	</div>
+		<p><a href="{{ h.url_for('organization.index') }}">{{ _('Organizations') }}</a></p>
+		<p><a href="#">Featured</a></p>
+	
+</div>
+{% endblock %}
+
+

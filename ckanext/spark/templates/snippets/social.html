@@ -1,0 +1,27 @@
+{% set current_url = h.full_current_url() %}
+{% block social %}
+    <section class="module module-narrow social">
+        {% block social_title %}
+        {% endblock %}
+        {% block social_nav %}
+            <ul class="nav nav-simple">
+                <li class="nav-item">
+                    <a style="color: blue;" href="https://twitter.com/share?url={{ current_url }}" target="_blank">
+                        <img class="img-socials" src="{{ h.url_for_static('images/twitter-png.png') }}" alt="Twitter">@{{ h.dataset_display_name(pkg) }}
+{#                    <i class="fa-brands fa-twitter-square"></i> Twitter#}
+                    </a></li>
+                <li class="nav-item">
+                    <a style="color: blue;" href="https://www.facebook.com/sharer.php?u={{ current_url }}" target="_blank">
+{#                        <i class="fa-brands fa-facebook-square"></i> Facebook#}
+                        <img class="img-socials" src="{{ h.url_for_static('images/facebook-png.png') }}" alt="Facebook">@{{ h.dataset_display_name(pkg) }}
+                    </a></li>
+            </ul>
+        {% endblock %}
+        <section class="module-content">
+        <h5 class="project-desc-heading">PROJECT DESCRIPTION</h5>
+        <div class="project-desc">TBD: This section displays a short gist of what this project is about!</div>
+        <h5 class="timeframe-heading">TIME FRAME</h5>
+        <div class="time-frame-desc">June, 2023 - December, 2023</div>
+        </section>
+    </section>
+{% endblock %}
