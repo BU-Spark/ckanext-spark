@@ -1,10 +1,10 @@
 {% ckan_extends %}
 
 {% block custom_styles %}
-	<link rel="stylesheet" href="/spark-frtend.css" />
 	{{ super() }}
+	<link rel="stylesheet" href="{{ h.url_for_static('/spark-frtend.css') }}" />
 {% endblock %}
 {% block scripts %}
+	{{ super() }}
 	{% asset 'spark/spark_theme' %}
-	{% asset 'spark/example_theme_popover' %}
 {% endblock %}

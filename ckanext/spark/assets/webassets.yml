@@ -15,7 +15,3 @@
 spark_theme:
   contents:
     - spark_theme.js
-
-example_theme_popover:
-  contents:
-    - example_theme_popover.js

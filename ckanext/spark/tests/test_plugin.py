@@ -47,10 +47,20 @@ To temporary patch the CKAN configuration for the duration of a test you can use
     def test_some_action():
         pass
 """
-import ckanext.spark.plugin as plugin
+import pytest
+
+from ckan.plugins import plugin_loaded
 
 
 @pytest.mark.ckan_config("ckan.plugins", "spark")
 @pytest.mark.usefixtures("with_plugins")
 def test_plugin():
     assert plugin_loaded("spark")
+
+
+@pytest.mark.ckan_config("ckan.plugins", "spark")
+@pytest.mark.usefixtures("with_plugins")
+def test_homepage_renders(app):
+    response = app.get("/")
+    assert response.status_code == 200
+    assert "Data@Spark" in response.text
