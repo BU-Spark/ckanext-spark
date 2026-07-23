@@ -1,4 +1,7 @@
-{% ckan_extends %}
+{% set dataset_type = h.default_package_type() %}
+{% set placeholder = h.humanize_entity_type('package', dataset_type, 'search placeholder') or _('Search datasets') %}
+{% set tags = h.get_facet_items_dict('tags', search_facets) %}
+
 <div class="module-search card box">
   <form class="module-content search-form" method="get" action="{% url_for dataset_type ~ '.search' %}">
     <h3 class="search-heading">{{ _("Search data") }}</h3>
@@ -13,7 +16,7 @@
   <div class="tags">
     <h3>{{ _('Popular tags') }}</h3>
     {% for tag in tags %}
-      <a class="tag" href="{% url_for 'dataset.search', tags=tag.name %}">{{ tag.display_name|truncate(22) }}</a>
+      <a class="tag" href="{% url_for dataset_type ~ '.search', tags=tag.name %}">{{ tag.display_name|truncate(22) }}</a>
     {% endfor %}
   </div>
 </div>

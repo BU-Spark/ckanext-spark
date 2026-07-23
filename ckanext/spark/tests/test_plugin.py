@@ -64,3 +64,6 @@ def test_homepage_renders(app):
     response = app.get("/")
     assert response.status_code == 200
     assert "Data@Spark" in response.text
+    assert 'id="field-main-search"' in response.text
+    assert 'id="tab-featured"' in response.text
+    assert "View featured datasets" in response.text

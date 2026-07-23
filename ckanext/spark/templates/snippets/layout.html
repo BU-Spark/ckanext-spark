@@ -90,7 +90,7 @@
 
         <section class="tab-content" id="tab-topics">
           <div class="home-card-container">
-            {% for topic in h.spark_groups() %}
+            {% for topic in h.spark_groups(limit=6) %}
               <article class="home-card">
                 <div class="home-card-content">
                   <a href="{{ h.url_for('group.read', id=topic.name) }}">

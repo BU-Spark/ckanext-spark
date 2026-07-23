@@ -14,10 +14,10 @@
         <div class="notes embedded-content">
           {{ h.render_markdown(h.get_translated(pkg, 'notes')) }}
 	</div>
-	 <div class="resource-list">
-          {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %} 
-	</div>
       {% endif %}
+      <div class="resource-list">
+        {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
+      </div>
      {% endblock %}
  {% endblock %}
 

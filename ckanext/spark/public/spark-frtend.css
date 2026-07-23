@@ -93,7 +93,7 @@ button.btn[type="submit"] {
 
 #field-sitewide-search::placeholder {
     text-align: right;
-    color: #FFFFFF;
+    color: #727272;
 }
 
 .container,
@@ -499,8 +499,8 @@ div.notes.embedded-content {
 }
 
 .dataset-details {
-    background-color: #FFFFFF;!important;
-    color: #000000;!important;
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
 }
 
 .additional-info-table {
@@ -660,4 +660,3 @@ h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
 .next-btn::before {
     margin-left: 5px;
 }
-

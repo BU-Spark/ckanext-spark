@@ -43,9 +43,8 @@
 	
 		<p><a href="{{ h.url_for('home.about') }}">{{ _('About') }}</a></p>
 	</div>
-		<p><a href="{{ h.url_for('organization.index') }}">{{ _('Organizations') }}</a></p>
-		<p><a href="#">Featured</a></p>
+		<p><a href="{{ h.url_for(h.default_group_type('organization') ~ '.index') }}">{{ _('Organizations') }}</a></p>
+		<p><a href="{{ h.url_for(h.default_package_type() ~ '.search', tags='featured') }}">{{ _('Featured') }}</a></p>
 	
 </div>
 {% endblock %}
-

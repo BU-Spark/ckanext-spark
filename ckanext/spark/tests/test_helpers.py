@@ -44,3 +44,16 @@ def test_featured_datasets_filters_featured_tag(monkeypatch):
             },
         )
     ]
+
+
+def test_groups_accepts_an_optional_limit(monkeypatch):
+    calls = []
+
+    def group_list(context, data_dict):
+        calls.append((context, data_dict))
+        return []
+
+    monkeypatch.setattr(helpers.toolkit, "get_action", lambda action: group_list)
+
+    assert helpers.groups(limit=6) == []
+    assert calls == [({}, {"all_fields": True, "limit": 6})]

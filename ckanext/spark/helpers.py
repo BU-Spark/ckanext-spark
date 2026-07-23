@@ -25,8 +25,11 @@ def popular_datasets():
     return _datasets(sort="views_recent desc")
 
 
-def groups():
-    return toolkit.get_action("group_list")({}, {"all_fields": True})
+def groups(limit=None):
+    params = {"all_fields": True}
+    if limit is not None:
+        params["limit"] = limit
+    return toolkit.get_action("group_list")({}, params)
 
 
 def format_date(value):
