@@ -72,3 +72,18 @@ def test_homepage_renders(app):
     logo = app.get("/images/data_spark_logo.png")
     assert logo.status_code == 200
     assert logo.content_type == "image/png"
+
+
+@pytest.mark.ckan_config("ckan.plugins", "spark")
+@pytest.mark.usefixtures("with_plugins")
+def test_primary_navigation_does_not_promote_organizations(app):
+    response = app.get("/")
+    primary_navigation = response.text.split(
+        '<div class="main-navbar', 1
+    )[1].split("</div>", 1)[0]
+
+    assert 'href="/dataset/"' in primary_navigation
+    assert 'href="/group/"' in primary_navigation
+    assert 'href="/about"' in primary_navigation
+    assert 'href="/organization/"' not in primary_navigation
+    assert "Organizations" not in primary_navigation
