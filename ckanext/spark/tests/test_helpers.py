@@ -3,7 +3,7 @@
 import ckanext.spark.helpers as helpers
 
 
-def test_spark_hello():
+def test_format_date_formats_iso_timestamp():
     assert helpers.format_date("2026-07-23T13:14:15.000000") == "July 23, 2026"
 
 

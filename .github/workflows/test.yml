@@ -26,13 +26,13 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     container:
-      image: ckan/ckan-dev:2.11
+      image: ckan/ckan-dev:2.11.5@sha256:75b7cdcd8fe2fe398ce0d4587e53303ba1e907d007ed7ad944e0f9094f16c5e4
       options: --user root
     services:
       solr:
-        image: ckan/ckan-solr:2.11-solr9
+        image: ckan/ckan-solr:2.11-solr9@sha256:ef8e5d3e6be1678cfe50ceb14a8ebf16c36d44aac2de1086a285ce6807af64e6
       postgres:
-        image: ckan/ckan-postgres-dev:2.11
+        image: ckan/ckan-postgres-dev:2.11@sha256:59068a0fc5fed7e94e8765081db5de3d539f8ebb79c9e97b332f641813f046df
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -43,7 +43,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:6
+        image: redis:6@sha256:e608fb94319e1aa53cecadbb051faa36d5c495f1142b99ca6673b41c2b428c0a
     env:
       CKAN_SQLALCHEMY_URL: postgresql://ckan_default:pass@postgres/ckan_test
       CKAN_DATASTORE_WRITE_URL: postgresql://datastore_write:pass@postgres/datastore_test

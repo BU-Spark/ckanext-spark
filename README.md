@@ -9,7 +9,7 @@ custom dataset schemas, authorization rules, actions, or database tables.
 ## Compatibility
 
 - CKAN 2.11 (target)
-- Python 3.9–3.11
+- Python 3.10–3.14
 
 CKAN 2.11.5 is the validation target for the initial Data@Spark launch.
 
