@@ -1,5 +1,5 @@
 include README.md
 include LICENSE
 include requirements.txt
-recursive-include ckanext/spark *.html *.json *.js *.less *.css *.mo *.yml
+recursive-include ckanext/spark *.html *.json *.js *.less *.css *.mo *.yml *.png *.svg *.jpg *.jpeg *.gif *.webp
 recursive-include ckanext/spark/migration *.ini *.py *.mako
