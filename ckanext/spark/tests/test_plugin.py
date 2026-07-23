@@ -47,10 +47,43 @@ To temporary patch the CKAN configuration for the duration of a test you can use
     def test_some_action():
         pass
 """
-import ckanext.spark.plugin as plugin
+import pytest
+
+from ckan.plugins import plugin_loaded
 
 
 @pytest.mark.ckan_config("ckan.plugins", "spark")
 @pytest.mark.usefixtures("with_plugins")
 def test_plugin():
     assert plugin_loaded("spark")
+
+
+@pytest.mark.ckan_config("ckan.plugins", "spark")
+@pytest.mark.usefixtures("with_plugins")
+def test_homepage_renders(app):
+    response = app.get("/")
+    assert response.status_code == 200
+    assert "Data@Spark" in response.text
+    assert 'src="/images/data_spark_logo.png"' in response.text
+    assert 'id="field-main-search"' in response.text
+    assert 'id="tab-featured"' in response.text
+    assert "View featured datasets" in response.text
+
+    logo = app.get("/images/data_spark_logo.png")
+    assert logo.status_code == 200
+    assert logo.content_type == "image/png"
+
+
+@pytest.mark.ckan_config("ckan.plugins", "spark")
+@pytest.mark.usefixtures("with_plugins")
+def test_primary_navigation_does_not_promote_organizations(app):
+    response = app.get("/")
+    primary_navigation = response.text.split(
+        '<div class="main-navbar', 1
+    )[1].split("</div>", 1)[0]
+
+    assert 'href="/dataset/"' in primary_navigation
+    assert 'href="/group/"' in primary_navigation
+    assert 'href="/about"' in primary_navigation
+    assert 'href="/organization/"' not in primary_navigation
+    assert "Organizations" not in primary_navigation

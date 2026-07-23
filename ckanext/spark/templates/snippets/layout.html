@@ -1,0 +1,112 @@
+{% set dataset_type = h.default_package_type() %}
+
+{% macro dataset_cards(datasets) %}
+  <div class="home-card-container">
+    {% for dataset in datasets %}
+      <article class="home-card">
+        {% if dataset.organization %}
+          <div class="card-heading">
+            <span class="topic-name">{{ dataset.organization.title }}</span>
+          </div>
+        {% endif %}
+        <div class="home-card-content">
+          <p class="dataset-name">{{ dataset.title or dataset.name }}</p>
+          {% if dataset.metadata_modified %}
+            <p class="last-updated">
+              Last updated:
+              <span class="formatted-date">{{ h.spark_format_date(dataset.metadata_modified) }}</span>
+            </p>
+          {% endif %}
+        </div>
+        <a href="{{ h.url_for(dataset_type ~ '.read', id=dataset.name) }}" class="view-button">
+          View
+        </a>
+      </article>
+    {% else %}
+      <p class="empty">No datasets are available yet.</p>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+<div class="home-page-main" role="main">
+  <div class="container">
+    <div class="grid-container">
+      <div class="row">
+        <div class="grid-child">
+          {% block introtext %}
+            {% snippet 'snippets/indexlayout.html' %}
+          {% endblock %}
+        </div>
+        <div class="grid-child">
+          {% block search %}
+            {% snippet 'home/snippets/search.html', search_facets=search_facets %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <div class="headline-section">
+      <div class="container">
+        <div class="heading-headline">Data@Spark</div>
+        <div class="data-headline">
+          Explore datasets produced and acquired through Spark! projects at Boston University.
+        </div>
+      </div>
+    </div>
+
+    <div class="index-layout-sections">
+      <div class="container">
+        <div class="tab-container" data-module="spark_theme">
+          <button class="tab active" type="button" data-tab-content="tab-datasets">Datasets</button>
+          <button class="tab" type="button" data-tab-content="tab-popular">Popular</button>
+          <button class="tab" type="button" data-tab-content="tab-featured">Featured</button>
+          <button class="tab" type="button" data-tab-content="tab-topics">Topics</button>
+        </div>
+
+        <section class="tab-content" id="tab-datasets">
+          {{ dataset_cards(h.spark_all_datasets()) }}
+          <div class="pagination-controls">
+            <a href="{{ h.url_for(dataset_type ~ '.search') }}" class="show-more-btn">View all datasets</a>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-popular">
+          {{ dataset_cards(h.spark_popular_datasets()) }}
+          <div class="pagination-controls">
+            <a href="{{ h.url_for(dataset_type ~ '.search', sort='views_recent desc') }}" class="show-more-btn">
+              View popular datasets
+            </a>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-featured">
+          {{ dataset_cards(h.spark_featured_datasets()) }}
+          <div class="pagination-controls">
+            <a href="{{ h.url_for(dataset_type ~ '.search', tags='featured') }}" class="show-more-btn">
+              View featured datasets
+            </a>
+          </div>
+        </section>
+
+        <section class="tab-content" id="tab-topics">
+          <div class="home-card-container">
+            {% for topic in h.spark_groups(limit=6) %}
+              <article class="home-card">
+                <div class="home-card-content">
+                  <a href="{{ h.url_for('group.read', id=topic.name) }}">
+                    {{ topic.display_name or topic.title or topic.name }}
+                  </a>
+                </div>
+              </article>
+            {% else %}
+              <p class="empty">No topics are available yet.</p>
+            {% endfor %}
+          </div>
+          <div class="pagination-controls">
+            <a href="{{ h.url_for('group.index') }}" class="show-more-btn">View all topics</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

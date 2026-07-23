@@ -1,0 +1,24 @@
+{% ckan_extends %}
+
+{% block header_logo %}
+  <a class="logo" href="{{ h.url_for('home.index') }}">
+    <img
+      src="{{ h.url_for_static('/images/data_spark_logo.png') }}"
+      alt="{{ g.site_title or _('Data@Spark') }}"
+      title="{{ g.site_title or _('Data@Spark') }}"
+    >
+  </a>
+{% endblock %}
+
+{% block header_site_navigation_tabs %}
+  {% set dataset_type = h.default_package_type() %}
+  {% set group_type = h.default_group_type('group') %}
+
+  {{ h.build_nav_main(
+    (dataset_type ~ '.search',
+      h.humanize_entity_type('package', dataset_type, 'main nav') or _('Datasets'),
+      ['dataset', 'resource']),
+    (group_type ~ '.index', _('Topics'), ['group']),
+    ('home.about', _('About'))
+  ) }}
+{% endblock %}

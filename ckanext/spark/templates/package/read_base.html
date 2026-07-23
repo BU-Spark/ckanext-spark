@@ -1,0 +1,9 @@
+{% ckan_extends %}
+{% block head_extras -%}
+{% endblock -%}
+{% block package_social %}
+    {% snippet "snippets/social.html", pkg=pkg %}
+  {% endblock %}
+{% block package_license %}
+  {% endblock %}
+
