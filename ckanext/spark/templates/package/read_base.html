@@ -7,3 +7,8 @@
 {% block package_license %}
   {% endblock %}
 
+{% block secondary_content %}
+  {{ super() }}
+  {% snippet "snippets/topics_list.html", groups=pkg.groups %}
+{% endblock %}
+

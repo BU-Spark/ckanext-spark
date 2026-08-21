@@ -1,0 +1,21 @@
+{#
+Topics a dataset is filed under, for the dataset page sidebar.
+
+CKAN doesn't surface a dataset's groups on the read page by default (they live
+on a separate /dataset/groups/<id> tab), so a dataset would otherwise never
+show its own topic. Renders nothing when a dataset has no topics yet.
+#}
+{% if groups %}
+  <div class="module module-narrow module-shallow context-info">
+    <section class="module-content">
+      <h5 class="org-heading">{{ _('Topics') }}</h5>
+      <div class="topic-pills">
+        {% for group in groups %}
+          <a class="topic-pill" href="{{ h.url_for('group.read', id=group.name) }}">
+            {{ group.display_name or group.title or group.name }}
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+{% endif %}

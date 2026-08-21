@@ -1,0 +1,90 @@
+# Local development stack for the Data@Spark theme.
+#
+# Deliberately self-contained rather than reusing infra-public-data-portal's
+# compose: that one pins CKAN 2.10 with a Solr 8 image (and an .env claiming
+# 2.9.7), and this theme was rehabilitated for CKAN 2.11 -- Solr 8 won't serve a
+# 2.11 schema. It is also a half-finished 2024 Kubernetes migration, so changing
+# it to run a theme locally would mean editing something mid-refactor.
+#
+# This is for local work only. It is not a deployment: the secrets below are
+# fixed test values, and the site is served over plain HTTP on localhost.
+#
+#   docker compose -f docker-compose.dev.yml up -d
+#   docker compose -f docker-compose.dev.yml exec ckan ckan -c $CKAN_INI spark init-topics
+#   open http://localhost:5000
+#
+# The repo is bind-mounted, so template and CSS edits show up on reload.
+
+name: ckanext-spark-dev
+
+services:
+  ckan:
+    image: ckan/ckan-dev:2.11
+    # The official CKAN images are published amd64-only, so on Apple Silicon
+    # they run under emulation. Slower to boot, but it's the same image CI and
+    # the server use -- worth more than a fast locally-built variant.
+    platform: linux/amd64
+    depends_on:
+      db:
+        condition: service_healthy
+      solr:
+        condition: service_started
+      redis:
+        condition: service_started
+    ports:
+      - "5000:5000"
+    # The image's install_src.sh only runs at BUILD time, and /docker-entrypoint.d
+    # runs after prerun.py has already tried (and failed) to load the plugin. So a
+    # bind-mounted extension has to be pip-installed here, ahead of the start
+    # script, or CKAN boots with "Plugin 'spark' not found" and restart-loops.
+    # Editable install + bind mount means template and Python edits stay live.
+    command: >
+      bash -c "pip install -e /srv/app/src_extensions/ckanext-spark &&
+               /srv/app/start_ckan_development.sh"
+    environment:
+      CKAN_SQLALCHEMY_URL: postgresql://ckan:pass@db/ckan
+      CKAN_DATASTORE_WRITE_URL: postgresql://ckan:pass@db/datastore
+      CKAN_DATASTORE_READ_URL: postgresql://datastore_ro:pass@db/datastore
+      CKAN_SOLR_URL: http://solr:8983/solr/ckan
+      CKAN_REDIS_URL: redis://redis:6379/0
+      CKAN_SITE_URL: http://localhost:5000
+      CKAN__PLUGINS: envvars image_view datatables_view datastore spark
+      CKAN___BEAKER__SESSION__SECRET: local-dev-not-a-secret
+      CKAN__API_TOKEN__JWT__ENCODE__SECRET: string:local-dev-not-a-secret
+      CKAN__API_TOKEN__JWT__DECODE__SECRET: string:local-dev-not-a-secret
+      CKAN_SYSADMIN_NAME: ckan_admin
+      CKAN_SYSADMIN_PASSWORD: test1234
+      CKAN_SYSADMIN_EMAIL: admin@localhost.local
+    volumes:
+      # The image expects mounted extensions under src/, and its entrypoint
+      # pip-installs anything it finds there in editable mode.
+      - .:/srv/app/src_extensions/ckanext-spark
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ckan
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ckan
+    volumes:
+      - pg:/var/lib/postgresql/data
+      - ./contrib/init-datastore.sql:/docker-entrypoint-initdb.d/10-datastore.sql:ro
+    healthcheck:
+      # Without a healthcheck gate CKAN's entrypoint races Postgres' first-boot
+      # initdb and dies on connection refused before it ever retries.
+      test: ["CMD-SHELL", "pg_isready -U ckan"]
+      interval: 5s
+      retries: 20
+
+  solr:
+    image: ckan/ckan-solr:2.11-solr9
+    platform: linux/amd64
+    volumes:
+      - solr:/var/solr
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  pg:
+  solr:

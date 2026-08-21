@@ -88,22 +88,22 @@
           </div>
         </section>
 
+        {# The full taxonomy, not a sample: every topic shows even at zero
+           datasets, so the shape of the collection is legible while it fills. #}
         <section class="tab-content" id="tab-topics">
-          <div class="home-card-container">
-            {% for topic in h.spark_groups(limit=6) %}
-              <article class="home-card">
-                <div class="home-card-content">
-                  <a href="{{ h.url_for('group.read', id=topic.name) }}">
-                    {{ topic.display_name or topic.title or topic.name }}
-                  </a>
-                </div>
-              </article>
-            {% else %}
-              <p class="empty">No topics are available yet.</p>
+          <div class="topic-grid">
+            {% for topic in h.spark_topics() %}
+              <a class="topic-tile{{ ' is-empty' if not topic.count }}"
+                 href="{{ h.url_for('group.read', id=topic.name) }}">
+                <span class="topic-tile-name">{{ topic.title }}</span>
+                <span class="topic-tile-count">
+                  {{ topic.count }} {{ 'dataset' if topic.count == 1 else 'datasets' }}
+                </span>
+              </a>
             {% endfor %}
           </div>
           <div class="pagination-controls">
-            <a href="{{ h.url_for('group.index') }}" class="show-more-btn">View all topics</a>
+            <a href="{{ h.url_for('group.index') }}" class="show-more-btn">Browse all topics</a>
           </div>
         </section>
       </div>

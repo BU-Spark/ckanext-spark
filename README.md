@@ -3,8 +3,42 @@
 `ckanext-spark` provides the Data@Spark theme used by Spark!'s public CKAN
 catalog at [data.buspark.io](https://data.buspark.io).
 
-The extension changes presentation only. It does not patch CKAN core or define
-custom dataset schemas, authorization rules, actions, or database tables.
+The extension is presentation plus the topic taxonomy. It does not patch CKAN
+core or define custom dataset schemas, authorization rules, actions, or database
+tables; the one thing it writes is the fixed set of topic groups, via the
+`spark init-topics` command below.
+
+## Topics
+
+Datasets are categorised with a fixed, rolled-up taxonomy of 11 subject areas
+(the "academic disciplines" list, not the detailed 40–50 item breakdown — CKAN's
+topic model is flat, so only the top level is representable). The list is
+defined in `ckanext/spark/topics.py` and is kept identical to `SPARK_TOPICS` in
+the Atlas project gallery, so a dataset and a project describe themselves with
+the same words.
+
+Topics are CKAN **groups** rather than free tags. Groups are flat, so they fit
+the same constraint tags would, but unlike tags they are a controlled vocabulary
+(no typos, no near-duplicates), they get a browsable page each, and CKAN already
+facets search on them.
+
+Assigning a topic is a **second step after creating a dataset**: CKAN 2.11's
+dataset form has an Organization selector but no group selector, so a topic is
+set from the dataset's *Groups* tab (`/dataset/groups/<name>`) or by adding the
+dataset from the topic's own page. Worth knowing, because it means a dataset can
+be created with no topic at all and nothing will complain. Putting an 11-way
+topic picker directly on the dataset form is the obvious follow-up if datasets
+start landing untagged.
+
+Create the topic groups on a new site (safe to re-run; it repairs a wrong title
+or a soft-deleted topic and leaves descriptions and images alone):
+
+```bash
+ckan -c /etc/ckan/default/ckan.ini spark init-topics
+```
+
+The unrelated `featured` **tag** still flags datasets for the homepage's
+Featured tab. That's a flag, not a topic.
 
 ## Compatibility
 
@@ -31,20 +65,29 @@ Restart CKAN after installing or updating the extension.
 
 ## Development
 
-Install the test dependency:
+`docker-compose.dev.yml` runs a complete local CKAN 2.11 with the repo
+bind-mounted, so template and CSS edits appear on reload:
 
 ```bash
-pip install -r dev-requirements.txt
+docker compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml exec ckan \
+    ckan -c "$CKAN_INI" spark init-topics
+open http://localhost:5000        # sign in as ckan_admin / test1234
 ```
 
-Run the test suite from a configured CKAN environment:
+Run the tests inside that container, which is the only place CKAN itself is
+importable:
 
 ```bash
-pytest
+docker compose -f docker-compose.dev.yml exec ckan \
+    pytest --ckan-ini=test.ini ckanext/spark/tests
 ```
 
-The Data@Spark deployment repository supplies the reproducible CKAN container
-environment used for integration and render testing.
+This stack is for local work only — the credentials in it are fixed test values
+and it serves plain HTTP on localhost. It is deliberately separate from
+`infra-public-data-portal`, whose compose is a half-finished Kubernetes
+migration still pinned to CKAN 2.10 and Solr 8 (Solr 8 cannot serve a 2.11
+schema). Deployment still comes from that repository, not this one.
 
 ## License
 
