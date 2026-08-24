@@ -87,7 +87,35 @@ This stack is for local work only — the credentials in it are fixed test value
 and it serves plain HTTP on localhost. It is deliberately separate from
 `infra-public-data-portal`, whose compose is a half-finished Kubernetes
 migration still pinned to CKAN 2.10 and Solr 8 (Solr 8 cannot serve a 2.11
-schema). Deployment still comes from that repository, not this one.
+schema).
+
+## Deployment
+
+**Making a skin or taxonomy change here does not, by itself, deploy anything.**
+The live Data@Spark image is built by `BU-Spark/ckan-docker`
+(`data-at-spark/Dockerfile`), which installs this extension from an exact,
+hardcoded Git commit:
+
+```dockerfile
+ARG CKANEXT_SPARK_COMMIT=<some commit sha>
+```
+
+That pin is deliberate, not an oversight — the same reasoning `ckan-docker`
+uses for its other pinned dependencies applies here: a branch name is not a
+pin, and a floating reference would mean some *other*, unrelated change could
+silently drag in unreviewed theme code with no corresponding change in
+`ckan-docker`'s own history.
+
+So after merging a PR here, someone has to go update that pin by hand:
+
+1. In `ckan-docker`, update `CKANEXT_SPARK_COMMIT` in both
+   `data-at-spark/Dockerfile` and the default in `data-at-spark/compose.yml`
+   to this repo's new `main` commit SHA.
+2. Push that change to `ckan-docker`'s `master` — that push is what actually
+   triggers the build, publish, and (for `int`) automatic redeploy. Merging
+   here does not.
+
+See `ckan-docker`'s `data-at-spark/README.md` for the full procedure.
 
 ## License
 
