@@ -30,34 +30,17 @@ def popular_datasets():
 def topics():
     """Return the canonical topic taxonomy, each with its live dataset count.
 
-    Always returns all of SPARK_TOPICS in taxonomy order, including topics with
-    no datasets yet -- the point of a fixed taxonomy is that the shape of it is
-    visible before it's full. Counts come from one faceted search rather than a
-    query per topic.
+    The live count is temporarily disabled -- see ckanext-spark#7. The
+    `package_search` facet query this used to run on every homepage load (with
+    no caching) coincided with the CKAN container becoming unhealthy and its
+    uWSGI workers thrashing on int within about a minute of deploy, under only
+    a single visitor's traffic. Root cause wasn't confirmed before rollback,
+    but this is the one thing this PR added to every homepage request, so it's
+    the first suspect to remove. Always returns all of SPARK_TOPICS in
+    taxonomy order with count 0 until #7 restores this with a fix (caching, a
+    cheaper query, or confirmation this wasn't actually the cause).
     """
-    result = toolkit.get_action("package_search")(
-        {},
-        {
-            "rows": 0,
-            "facet.field": ["groups"],
-            # Defensive, not a bugfix: CKAN feeds facet.limit from
-            # `search.facets.limit`, which defaults to 50, so the 11 topics fit
-            # today. Pinning -1 means the homepage can't start silently dropping
-            # the least-used topics if someone lowers that config, or if the
-            # taxonomy grows past it. (The other CKAN setting,
-            # `search.facets.default` = 10, is a UI display cap and never
-            # reaches this query.)
-            "facet.limit": -1,
-        },
-    )
-    # Missing on a brand-new site with an empty index.
-    counts = result.get("search_facets", {}).get("groups", {}).get("items", [])
-    counts = {item["name"]: item["count"] for item in counts}
-
-    return [
-        {"name": name, "title": title, "count": counts.get(name, 0)}
-        for name, title in SPARK_TOPICS
-    ]
+    return [{"name": name, "title": title, "count": 0} for name, title in SPARK_TOPICS]
 
 
 def format_date(value):
