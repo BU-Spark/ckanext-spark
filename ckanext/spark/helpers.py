@@ -10,19 +10,76 @@ from ckanext.spark.topics import SPARK_TOPICS
 
 log = logging.getLogger(__name__)
 
-# How long a topic count may be stale. Topics are created by hand and datasets
-# are added in batches, so a homepage tile reading one dataset behind for a
-# minute costs nothing; taking Solr off the per-request path is worth much more.
-TOPIC_COUNT_TTL_SECONDS = 60
+# How long homepage search results may be stale. Everything cached here is a
+# "what's here lately" summary, so a tile reading a minute behind costs nothing;
+# taking Solr off the per-request path is worth much more.
+HOMEPAGE_CACHE_TTL_SECONDS = 60
 
-# (fetched_at_monotonic, {group_name: count}). Module-level, so each uWSGI
-# worker keeps its own copy -- with a handful of workers that is still at most a
-# few queries per TTL instead of one per request. Deliberately not Redis: a
-# shared cache would be another moving part and another thing that can be down,
-# for a value this cheap to recompute. Assignment of the whole tuple is atomic
-# under the GIL, so a concurrent refresh costs a duplicate query, never a torn
-# read.
-_topic_counts_cache = (None, {})
+# Back-compat alias: the topic-count TTL was named separately before the other
+# three homepage searches were cached too.
+TOPIC_COUNT_TTL_SECONDS = HOMEPAGE_CACHE_TTL_SECONDS
+
+# key -> (fetched_at_monotonic, value). Module-level, so each uWSGI worker keeps
+# its own copy: a few queries per TTL instead of one per request. Deliberately
+# not Redis -- a shared cache is another moving part that can itself be down, for
+# values this cheap to recompute. Assigning a whole tuple is atomic under the
+# GIL, so a concurrent refresh costs a duplicate query, never a torn read.
+_cache: dict = {}
+
+
+def _is_anonymous():
+    """True only if we're certain no user is logged in.
+
+    This gates every cache read and write, because `package_search` filters on
+    permission labels derived from the requesting user (see CKAN's
+    logic/action/get.py, "enforce permission filter based on user"): a sysadmin
+    gets `labels = None` and sees private datasets. Caching one user's results
+    under a shared key would serve their private dataset titles to the next
+    visitor.
+
+    Fails CLOSED. Anything unexpected -- no request context (CLI, tests,
+    background jobs), a CKAN version that moves `current_user` -- returns False,
+    which bypasses the cache and costs a query. The opposite default would leak.
+    """
+    try:
+        user = toolkit.current_user
+    except Exception:
+        return False
+    if user is None:
+        return False
+    try:
+        return bool(user.is_anonymous)
+    except Exception:
+        return False
+
+
+def _cached(key, refresh, default):
+    """Return `refresh()`'s value, memoised per worker for the TTL.
+
+    Logged-in (or unknown) users always get a live call, so their view is never
+    cached and never served from someone else's.
+
+    A failed refresh serves the previous value and still resets the timer, so a
+    struggling Solr is retried once per TTL rather than once per request. Solr
+    being slow should degrade the homepage's tiles, not 500 the page.
+    """
+    if not _is_anonymous():
+        return refresh()
+
+    entry = _cache.get(key)
+    now = time.monotonic()
+    if entry is not None and now - entry[0] < HOMEPAGE_CACHE_TTL_SECONDS:
+        return entry[1]
+
+    value = entry[1] if entry is not None else default
+    try:
+        value = refresh()
+    except Exception:
+        log.warning("Homepage cache refresh failed for %s; serving stale", key,
+                    exc_info=True)
+
+    _cache[key] = (now, value)
+    return value
 
 
 def _datasets(**params):
@@ -34,15 +91,27 @@ def _datasets(**params):
 
 
 def all_datasets():
-    return _datasets(sort="metadata_modified desc")
+    return _cached(
+        "all_datasets",
+        lambda: _datasets(sort="metadata_modified desc"),
+        [],
+    )
 
 
 def featured_datasets():
-    return _datasets(fq="tags:featured", sort="metadata_modified desc")
+    return _cached(
+        "featured_datasets",
+        lambda: _datasets(fq="tags:featured", sort="metadata_modified desc"),
+        [],
+    )
 
 
 def popular_datasets():
-    return _datasets(sort="views_recent desc")
+    return _cached(
+        "popular_datasets",
+        lambda: _datasets(sort="views_recent desc"),
+        [],
+    )
 
 
 def _refresh_topic_counts():
@@ -66,36 +135,16 @@ def _refresh_topic_counts():
 
 
 def topic_counts():
-    """Group-name -> dataset count, cached for TOPIC_COUNT_TTL_SECONDS.
+    """Group name -> dataset count, cached like the other homepage searches.
 
-    See ckanext-spark#7: an uncached version of this query ran on every homepage
-    load and coincided with the int container going unhealthy. Root cause was
-    never confirmed, and local measurement at 304 datasets puts this query at
-    27.8ms median -- indistinguishable from the three `package_search` calls the
-    homepage already made (25-27ms each). So this cache is not a proven fix for
-    that incident; it removes the query from the hot path so it cannot be the
-    cause of the next one, and that is all it claims.
-
-    A failed refresh serves the previous counts rather than raising. Solr being
-    slow or down should degrade the homepage's topic tiles to stale-or-zero, not
-    500 the whole page -- which is the failure mode #7 actually cared about.
+    See ckanext-spark#7: an uncached version of this ran on every homepage load
+    and coincided with the int container going unhealthy. Measured at 304
+    datasets it is 27.8ms -- indistinguishable from the three `package_search`
+    calls the homepage already made -- so this cache is not a proven fix for that
+    incident. It removes the query from the hot path so it cannot cause the next
+    one, and that is all it claims.
     """
-    global _topic_counts_cache
-    fetched_at, counts = _topic_counts_cache
-    now = time.monotonic()
-
-    if fetched_at is not None and now - fetched_at < TOPIC_COUNT_TTL_SECONDS:
-        return counts
-
-    try:
-        counts = _refresh_topic_counts()
-    except Exception:
-        # Keep serving the last good counts (or {} on the very first call) and
-        # back off for a full TTL so a struggling Solr isn't retried per request.
-        log.warning("Topic count refresh failed; serving stale counts", exc_info=True)
-
-    _topic_counts_cache = (now, counts)
-    return counts
+    return _cached("topic_counts", _refresh_topic_counts, {})
 
 
 def topics():

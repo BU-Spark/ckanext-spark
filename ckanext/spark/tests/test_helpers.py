@@ -7,6 +7,30 @@ import pytest
 import ckanext.spark.helpers as helpers
 import ckanext.spark.topics as topics
 
+# Captured before the autouse fixture stubs it out, so the tests below can
+# exercise the real gate rather than the stub.
+_REAL_IS_ANONYMOUS = helpers._is_anonymous
+
+
+@pytest.fixture(autouse=True)
+def _anonymous_with_empty_cache(monkeypatch):
+    """Every test starts anonymous with an empty cache.
+
+    Two separate hazards, both of which produce tests that pass for the wrong
+    reason: a populated cache means later tests assert against an earlier
+    test's values, and outside a request context `_is_anonymous()` fails closed,
+    so the cache would never engage and the caching tests would be vacuous.
+    """
+    helpers._cache.clear()
+    monkeypatch.setattr(helpers, "_is_anonymous", lambda: True)
+    yield
+    helpers._cache.clear()
+
+def _age_out(key):
+    """Push a cache entry past its TTL instead of sleeping through it."""
+    fetched_at, value = helpers._cache[key]
+    helpers._cache[key] = (fetched_at - helpers.HOMEPAGE_CACHE_TTL_SECONDS - 1, value)
+
 
 def test_format_date_formats_iso_timestamp():
     assert helpers.format_date("2026-07-23T13:14:15.000000") == "July 23, 2026"
@@ -27,6 +51,10 @@ def test_all_datasets_uses_single_search_action(monkeypatch):
 
     assert helpers.all_datasets() == [{"name": "example"}]
     assert calls == [({}, {"rows": 6, "sort": "metadata_modified desc"})]
+
+    # Second call inside the TTL is served from cache, not Solr.
+    assert helpers.all_datasets() == [{"name": "example"}]
+    assert len(calls) == 1
 
 
 def test_featured_datasets_filters_featured_tag(monkeypatch):
@@ -51,16 +79,6 @@ def test_featured_datasets_filters_featured_tag(monkeypatch):
     ]
 
 
-@pytest.fixture(autouse=True)
-def _clear_topic_cache():
-    """Empty the module-level topic-count cache around every test.
-
-    Without this, whichever topic test ran first would populate the cache and
-    every later one would silently assert against its counts instead of its own.
-    """
-    helpers._topic_counts_cache = (None, {})
-    yield
-    helpers._topic_counts_cache = (None, {})
 
 
 def _stub_topic_search(monkeypatch, facet_items, calls=None):
@@ -155,12 +173,7 @@ def test_topic_counts_refresh_after_the_ttl_expires(monkeypatch):
     _stub_topic_search(monkeypatch, [{"name": "education-learning", "count": 4}], calls)
 
     helpers.topics()
-    # Jump past the TTL rather than sleeping through it.
-    fetched_at, counts = helpers._topic_counts_cache
-    helpers._topic_counts_cache = (
-        fetched_at - helpers.TOPIC_COUNT_TTL_SECONDS - 1,
-        counts,
-    )
+    _age_out("topic_counts")
     helpers.topics()
 
     assert len(calls) == 2
@@ -178,11 +191,7 @@ def test_topic_counts_serve_stale_values_when_the_refresh_fails(monkeypatch):
         return _boom
 
     monkeypatch.setattr(helpers.toolkit, "get_action", explode)
-    fetched_at, counts = helpers._topic_counts_cache
-    helpers._topic_counts_cache = (
-        fetched_at - helpers.TOPIC_COUNT_TTL_SECONDS - 1,
-        counts,
-    )
+    _age_out("topic_counts")
 
     result = {t["name"]: t["count"] for t in helpers.topics()}
 
@@ -232,3 +241,84 @@ def test_topic_names_are_unique_and_url_safe():
     for name in names:
         # CKAN group names: lowercase alphanumerics, - and _, at least 2 chars.
         assert re.fullmatch(r"[a-z0-9_-]{2,100}", name), name
+
+
+def test_every_homepage_search_is_cached(monkeypatch):
+    """All four homepage searches, not just the topic counts (see #7 discussion).
+
+    A warm homepage should make zero Solr calls. Previously it made four.
+    """
+    calls = []
+
+    def package_search(context, data_dict):
+        calls.append(data_dict)
+        return {
+            "results": [],
+            "search_facets": {"groups": {"items": []}},
+        }
+
+    monkeypatch.setattr(helpers.toolkit, "get_action", lambda action: package_search)
+
+    def render_homepage():
+        helpers.all_datasets()
+        helpers.popular_datasets()
+        helpers.featured_datasets()
+        helpers.topics()
+
+    render_homepage()
+    assert len(calls) == 4, "cold cache should do exactly one query per helper"
+
+    calls.clear()
+    for _ in range(10):
+        render_homepage()
+    assert calls == [], "a warm homepage must not touch Solr at all"
+
+
+def test_logged_in_users_never_read_or_write_the_cache(monkeypatch):
+    """The privacy gate.
+
+    `package_search` filters on permission labels derived from the user, and a
+    sysadmin gets no filter at all -- so caching their results under a shared key
+    would serve private dataset titles to the next anonymous visitor. Logged-in
+    users must always go live, and must never populate the shared cache.
+    """
+    monkeypatch.setattr(helpers, "_is_anonymous", lambda: False)
+    calls = []
+
+    def package_search(context, data_dict):
+        calls.append(data_dict)
+        return {"results": [{"name": "a-private-dataset"}]}
+
+    monkeypatch.setattr(helpers.toolkit, "get_action", lambda action: package_search)
+
+    for _ in range(5):
+        helpers.all_datasets()
+
+    assert len(calls) == 5, "a logged-in user must always get a live query"
+    assert helpers._cache == {}, "a logged-in user must not populate the cache"
+
+
+def test_is_anonymous_fails_closed_without_a_request_context(monkeypatch):
+    """Outside a request there is no user to check, so caching must not engage.
+
+    Fail-closed is the whole point: the wrong default here leaks one user's
+    results to another.
+    """
+
+    monkeypatch.delattr(helpers.toolkit, "current_user", raising=False)
+
+    assert _REAL_IS_ANONYMOUS() is False
+
+
+def test_is_anonymous_is_false_for_a_logged_in_user(monkeypatch):
+    monkeypatch.setattr(
+        helpers.toolkit, "current_user", type("U", (), {"is_anonymous": False})()
+    )
+    assert _REAL_IS_ANONYMOUS() is False
+
+
+def test_is_anonymous_is_true_for_an_anonymous_visitor(monkeypatch):
+    monkeypatch.setattr(
+        helpers.toolkit, "current_user", type("U", (), {"is_anonymous": True})()
+    )
+    assert _REAL_IS_ANONYMOUS() is True
