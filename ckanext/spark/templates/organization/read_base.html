@@ -1,0 +1,20 @@
+{% ckan_extends %}
+
+{% block toolbar %}
+  {% snippet 'snippets/spark_intro.html',
+    eyebrow=_('Organization'),
+    eyebrow_url=h.url_for(group_type ~ '.index'),
+    title=group_dict.display_name,
+    lede=h.markdown_extract(group_dict.description, extract_length=300) if group_dict.description else '',
+    stats=[(group_dict.package_count or 0, ungettext('dataset', 'datasets', group_dict.package_count or 0))] %}
+{% endblock %}
+
+{# Atlas has no tab strip: tabs and Manage stay for organization editors only. #}
+{% block page_header %}
+  {% if h.check_access('organization_update', {'id': group_dict.id}) %}{{ super() }}{% endif %}
+{% endblock %}
+
+{# Keep only the filters; the name and description moved to the intro. #}
+{% block secondary_content %}
+  {% block organization_facets %}{% endblock %}
+{% endblock %}

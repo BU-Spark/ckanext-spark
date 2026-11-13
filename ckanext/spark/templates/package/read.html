@@ -1,33 +1,64 @@
 {% ckan_extends %}
-  {% block package_description %}    
-    {% if pkg.private %}
-      <span class="dataset-private badge badge-inverse pull-right">
-        <i class="fa fa-lock"></i>
-        {{ _('Private') }}
+
+{# Atlas ProjectView header: mono eyebrow (topics = Atlas disciplines, dot in the first
+   topic's hue via search.css [data-topic]), display-font title, client block, lede. #}
+{% block package_description %}
+  {% set topics = pkg.groups or [] %}
+  <p class="sp-eyebrow"{% if topics %} data-topic="{{ topics[0].name }}"{% endif %}>
+    <span class="sp-dot" aria-hidden="true"></span>
+    <span>
+      {%- for g in topics -%}
+        {%- if not loop.first %} &middot; {% endif -%}
+        <a href="{{ h.url_for('group.read', id=g.name) }}">{{ g.display_name or g.title or g.name }}</a>
+      {%- else -%}
+        {{ _('Dataset') }}
+      {%- endfor -%}
+    </span>
+  </p>
+  <h1 class="sp-title">
+    {% block page_heading %}
+      {{ h.dataset_display_name(pkg) }}
+    {% endblock %}
+  </h1>
+  {% if pkg.private or pkg.state.startswith('draft') or pkg.state == 'deleted' %}
+    <p class="sp-flags">
+      {% if pkg.private %}<span class="sp-flag">{{ _('Private') }}</span>{% endif %}
+      {% if pkg.state.startswith('draft') %}<span class="sp-flag">{{ _('Draft') }}</span>{% endif %}
+      {% if pkg.state == 'deleted' %}<span class="sp-flag sp-flag-bad">{{ _('Deleted') }}</span>{% endif %}
+    </p>
+  {% endif %}
+  {% set n_res = pkg.resources | length %}
+  {% set formats = pkg.resources | map(attribute='format') | select | map('upper') | unique | list %}
+  <p class="sp-meta">
+    {%- if pkg.metadata_modified -%}<span>{{ _('Updated') }} {{ h.render_datetime(pkg.metadata_modified) }}</span>{%- endif -%}
+    <span>{{ ungettext('{num} resource', '{num} resources', n_res).format(num=n_res) }}</span>
+    {%- if formats -%}<span>{{ formats | join(' / ') }}</span>{%- endif -%}
+  </p>
+  {% if pkg.organization %}
+    {% set org_name = pkg.organization.title or pkg.organization.name %}
+    {# Atlas ClientBlock: initials tile, mono label, display-font name. #}
+    <a class="sp-org" href="{{ h.url_for(pkg.organization.type ~ '.read', id=pkg.organization.name) }}">
+      <span class="sp-org-tile" aria-hidden="true">{{ org_name.replace('The ', '', 1).split()[:2] | map('first') | join | upper }}</span>
+      <span class="sp-org-text">
+        <span class="sp-org-label">{{ _('Organization') }}</span>
+        <span class="sp-org-name">{{ org_name }}</span>
       </span>
-    {% endif %}
-     
-     
-    {% block package_notes %}
-    <h3 class="data-resources-heading">{{ _('Data and Resources') }}</h3>
-      {% if pkg.notes %}
-        <div class="notes embedded-content">
-          {{ h.render_markdown(h.get_translated(pkg, 'notes')) }}
-	</div>
-      {% endif %}
-      <div class="resource-list">
-        {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
+    </a>
+  {% endif %}
+  {% block package_notes %}
+    {% if pkg.notes %}
+      <div class="notes embedded-content sp-lede">
+        {{ h.render_markdown(h.get_translated(pkg, 'notes')) }}
       </div>
-     {% endblock %}
- {% endblock %}
-
- {% block package_resources %}
+    {% endif %}
   {% endblock %}
+{% endblock %}
 
-  {% block package_tags %}
-    {% snippet "package/snippets/tags.html", tags=pkg.tags %}
-  {% endblock %}
-
-  {% block package_additional_info %}
-    {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
-  {% endblock %}
+{% block package_tags %}
+  {% if pkg.tags %}
+    <section class="sp-section">
+      <h2 class="sp-label">{{ _('Tags') }}</h2>
+      {% snippet "package/snippets/tags.html", tags=pkg.tags %}
+    </section>
+  {% endif %}
+{% endblock %}

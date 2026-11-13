@@ -1,0 +1,19 @@
+{% ckan_extends %}
+
+{% block toolbar %}
+  {% snippet 'snippets/spark_intro.html',
+    eyebrow=_('Who publishes here'),
+    title=h.humanize_entity_type('organization', group_type, 'page title') or _('Organizations'),
+    lede=_('The Spark! teams, partners and programs that publish data here.') %}
+{% endblock %}
+
+{% block wrapper_class %} sp-page sp-orgs-page{% endblock %}
+
+{# Drop CKAN's hidden second h1; the intro h1 is the page heading. #}
+{% block primary_content_inner %}
+  {% block organizations_search_form %}{{ super() }}{% endblock %}
+  {% block organizations_list %}{{ super() }}{% endblock %}
+  {% block page_pagination %}{{ super() }}{% endblock %}
+{% endblock %}
+
+{% block secondary %}{% endblock %}

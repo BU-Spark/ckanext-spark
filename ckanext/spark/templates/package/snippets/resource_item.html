@@ -1,63 +1,28 @@
 {% ckan_extends %}
-  {% block resource_item_title %}
-  <a class="heading" href="{{ url }}" title="{{ res.name or res.description }}">
-    {{ h.resource_display_name(res) | truncate(50) }}<span class="format-label" property="dc:format" data-format="{{ (res.format or 'data').lower() }}">{{ h.get_translated(res, 'format') }}</span>
-    {{ h.popular('views', res.tracking_summary.total, min=10) if res.tracking_summary }}
-  </a>
-  {% endblock %}
-  {% block resource_item_description %}
-    <p class="description">
-      {% if res.description %}
-        {{ h.markdown_extract(h.get_translated(res, 'description'), extract_length=80) }}
-      {% endif %}
-    </p>
-  {% endblock %}
-  {% block resource_item_explore %}
-  {% if not url_is_edit %}
-  <div class="dropdown btn-group">
-    <a href="#" class="btn btn-primary dropdown-toggle" type="button" id="dropdownExplorer-{{ res.id }}" data-bs-toggle="dropdown" aria-expanded="false">
-      {{ _('VIEW') }}
-      <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="dropdownExplorer-{{ res.id }}">
-      {% block resource_item_explore_links %}
-        {% block explore_view %}
-          <li>
-            <a class="dropdown-item" href="{{ url }}">
-              {% if res.has_views %}
-                <i class="fa fa-chart-bar"></i>
-                {{ _('Preview') }}
-              {% else %}
-                <i class="fa fa-info-circle"></i>
-                {{ _('More information') }}
-              {% endif %}
-            </a>
-          </li>
-        {% endblock explore_view %}
 
-        {% if res.url and h.is_url(res.url) %}
-      <li>
-        <a class="dropdown-item resource-url-analytics" href="{{ res.url }}" target="_blank" rel="noreferrer">
-          {% if res.has_views or res.url_type == 'upload' %}
-            <i class="fa fa-arrow-circle-down"></i>
-            {{ _('Download') }}
-          {% else %}
-            <i class="fa fa-external-link"></i>
-            {{ _('Go to resource') }}
-          {% endif %}
+{#
+Atlas list row: format tile, display-font title over a one-line description,
+actions on the right. The tile replaces CKAN's sprite icon; `or 'data'` guards a
+resource saved with no format (CKAN's template calls .lower() on it).
+#}
+{% block resource_item_title %}
+  <span class="sp-fmt" property="dc:format" data-format="{{ (res.format or 'data').lower() }}">{{ h.get_translated(res, 'format') or _('Data') }}</span>
+  <a class="heading" href="{{ url }}" title="{{ res.name or res.description }}">{{ h.resource_display_name(res) | truncate(80) }}</a>
+{% endblock %}
+
+{# Atlas action buttons instead of CKAN's "Explore" dropdown. #}
+{% block resource_item_explore %}
+  {% if not url_is_edit %}
+    <div class="sp-actions">
+      <a class="sp-btn" href="{{ url }}">{{ _('Preview') if res.has_views else _('Details') }}</a>
+      {% if res.url and h.is_url(res.url) %}
+        <a class="sp-btn sp-btn-accent resource-url-analytics" href="{{ res.url }}" rel="noreferrer">
+          {{ _('Download') if res.has_views or res.url_type == 'upload' else _('Go to resource') }}
         </a>
-      </li>
       {% endif %}
       {% if can_edit %}
-      <li>
-        <a class="dropdown-item" href="{{ h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=res.id) }}">
-          <i class="fa fa-pencil-square"></i>
-          {{ _('Edit') }}
-        </a>
-      </li>
+        <a class="sp-btn sp-btn-ghost" href="{{ h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=res.id) }}">{{ _('Edit') }}</a>
       {% endif %}
-      {% endblock %}
-    </ul>
-  </div>
+    </div>
   {% endif %}
-  {% endblock %}
+{% endblock %}

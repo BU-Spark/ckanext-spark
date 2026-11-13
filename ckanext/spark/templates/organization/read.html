@@ -1,0 +1,12 @@
+{% ckan_extends %}
+
+{# Only the dataset list is a gallery; About / Members keep their own layout. #}
+{% block wrapper_class %} sp-results sp-gallery{% endblock %}
+
+{# Atlas filters column, shared with the topic page. #}
+{% block organization_facets %}
+  {% snippet 'group/snippets/spark_filters.html',
+    fields_grouped=fields_grouped, facet_titles=facet_titles, search_facets=search_facets,
+    extras={'id': group_dict.id},
+    clear_url=h.url_for(group_type ~ '.read', id=group_dict.name, q=q or None, sort=request.args.get('sort')) %}
+{% endblock %}

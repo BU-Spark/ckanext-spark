@@ -1,0 +1,16 @@
+{% ckan_extends %}
+
+{% block wrapper_class %} sp-page sp-about-page{% endblock %}
+{% block secondary %}{% endblock %}
+
+{# The intro already carries the name (h1) and the first 300 characters of the
+   description, so the full text only repeats here when the intro cut it short. #}
+{% block primary_content_inner %}
+  {% if group_dict.description and h.markdown_extract(group_dict.description, extract_length=300) != h.markdown_extract(group_dict.description, extract_length=0) %}
+    <div class="sp-prose">{{ h.render_markdown(group_dict.description) }}</div>
+  {% endif %}
+  {% block organization_extras %}{{ super() }}{% endblock %}
+  <ul class="sp-chips">
+    <li><a class="sp-chip" href="{{ h.url_for(group_type ~ '.read', id=group_dict.name) }}">{{ _('Browse its datasets') }} &rarr;</a></li>
+  </ul>
+{% endblock %}

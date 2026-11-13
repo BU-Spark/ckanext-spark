@@ -32,10 +32,6 @@ def _age_out(key):
     helpers._cache[key] = (fetched_at - helpers.HOMEPAGE_CACHE_TTL_SECONDS - 1, value)
 
 
-def test_format_date_formats_iso_timestamp():
-    assert helpers.format_date("2026-07-23T13:14:15.000000") == "July 23, 2026"
-
-
 def test_all_datasets_uses_single_search_action(monkeypatch):
     calls = []
 
@@ -55,30 +51,6 @@ def test_all_datasets_uses_single_search_action(monkeypatch):
     # Second call inside the TTL is served from cache, not Solr.
     assert helpers.all_datasets() == [{"name": "example"}]
     assert len(calls) == 1
-
-
-def test_featured_datasets_filters_featured_tag(monkeypatch):
-    calls = []
-
-    def package_search(context, data_dict):
-        calls.append((context, data_dict))
-        return {"results": []}
-
-    monkeypatch.setattr(helpers.toolkit, "get_action", lambda action: package_search)
-
-    assert helpers.featured_datasets() == []
-    assert calls == [
-        (
-            {},
-            {
-                "rows": 6,
-                "fq": "tags:featured",
-                "sort": "metadata_modified desc",
-            },
-        )
-    ]
-
-
 
 
 def _stub_topic_search(monkeypatch, facet_items, calls=None):
@@ -244,15 +216,18 @@ def test_topic_names_are_unique_and_url_safe():
 
 
 def test_every_homepage_search_is_cached(monkeypatch):
-    """All four homepage searches, not just the topic counts (see #7 discussion).
+    """Every homepage search, not just the topic counts (see #7 discussion).
 
-    A warm homepage should make zero Solr calls. Previously it made four.
+    The homepage shows recent datasets, topic counts and the dataset total; the
+    total rides on the topic-count query, so a cold homepage makes two Solr
+    calls and a warm one makes none.
     """
     calls = []
 
     def package_search(context, data_dict):
         calls.append(data_dict)
         return {
+            "count": 7,
             "results": [],
             "search_facets": {"groups": {"items": []}},
         }
@@ -261,12 +236,11 @@ def test_every_homepage_search_is_cached(monkeypatch):
 
     def render_homepage():
         helpers.all_datasets()
-        helpers.popular_datasets()
-        helpers.featured_datasets()
         helpers.topics()
+        assert helpers.dataset_count() == 7
 
     render_homepage()
-    assert len(calls) == 4, "cold cache should do exactly one query per helper"
+    assert len(calls) == 2, "the total must share the topic-count query"
 
     calls.clear()
     for _ in range(10):
@@ -322,3 +296,16 @@ def test_is_anonymous_is_true_for_an_anonymous_visitor(monkeypatch):
         helpers.toolkit, "current_user", type("U", (), {"is_anonymous": True})()
     )
     assert _REAL_IS_ANONYMOUS() is True
+
+
+def test_dataset_count_reads_the_topic_query_total(monkeypatch):
+    calls = []
+
+    def package_search(context, data_dict):
+        calls.append(data_dict)
+        return {"count": 15, "results": [], "search_facets": {"groups": {"items": []}}}
+
+    monkeypatch.setattr(helpers.toolkit, "get_action", lambda action: package_search)
+
+    assert helpers.dataset_count() == 15
+    assert calls[0]["rows"] == 0

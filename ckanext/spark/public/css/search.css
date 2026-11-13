@@ -1,0 +1,575 @@
+/* search.css -- see tokens.css. Owned by the search area of the redesign.
+   Ports the Atlas gallery body (spark-portfolio/atlas: components/Gallery.tsx
+   inline styles + app/globals.css .spark-*). Values are Atlas's unless noted.
+   Covers: /dataset layout (.sp-results), the filters column (facet_list.html),
+   the controls row and result count (search_form.html, also used on topic and
+   organization pages), dataset cards (package_item.html, used everywhere a
+   package_list renders) and CKAN's pager. */
+
+/* Local tokens: Atlas greys with no tokens.css equivalent. */
+:root {
+  --sps-ink-2: #3a3f44;   /* Atlas body-dark: sort select, card footer */
+  --sps-box: #cdcdcd;     /* Atlas facet checkbox border */
+}
+
+/* Topic colours. Atlas codes each discipline as oklch at fixed lightness and
+   chroma with only the hue varied (lib/colors.ts); the 11 CKAN topics get the
+   same treatment, hues 33deg apart. Any element with data-topic can use --c. */
+[data-topic] { --c: oklch(0.62 0.03 260); }
+[data-topic="health-medicine-wellbeing"] { --c: oklch(0.64 0.15 25); }
+[data-topic="immigration-community-social-services"] { --c: oklch(0.66 0.14 58); }
+[data-topic="housing-urban-development"] { --c: oklch(0.70 0.14 91); }
+[data-topic="business-economy-work"] { --c: oklch(0.66 0.13 124); }
+[data-topic="environment-sustainability"] { --c: oklch(0.64 0.13 157); }
+[data-topic="education-learning"] { --c: oklch(0.66 0.13 190); }
+[data-topic="media-technology-communication"] { --c: oklch(0.64 0.13 223); }
+[data-topic="government-politics-public-policy"] { --c: oklch(0.62 0.14 256); }
+[data-topic="law-civil-rights"] { --c: oklch(0.60 0.15 289); }
+[data-topic="arts-culture-humanities"] { --c: oklch(0.60 0.16 322); }
+[data-topic="criminal-justice-public-safety"] { --c: oklch(0.62 0.15 355); }
+
+/* ── Body: Atlas .spark-body (248px sidebar + results) on CKAN's .row.wrapper ── */
+.wrapper.sp-results {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 44px;
+  align-items: start;
+  margin: 0;
+  padding: 10px 0 110px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+}
+.wrapper.sp-results::before { display: none; }
+.wrapper.sp-results > .secondary,
+.wrapper.sp-results > .primary {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  float: none;
+  min-width: 0;
+}
+/* Atlas .spark-sidebar; the 4px inline padding keeps focus rings unclipped. */
+.wrapper.sp-results > .secondary {
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  padding: 0 14px 0 4px;
+  margin-left: -4px;
+  scrollbar-gutter: stable;
+}
+
+/* ── Filters column ── */
+.sp-filters-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.sp-filters-t {
+  margin: 0;
+  font: 700 16px/1.2 var(--sp-display);
+  color: var(--sp-ink);
+}
+.sp-filters-acts { display: flex; align-items: center; gap: 16px; }
+.sp-filters-act {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: 400 12.5px var(--sp-mono);
+  color: var(--sp-accent-text);
+  text-decoration: none;
+}
+.sp-filters-act:hover { color: var(--sp-accent-deep); text-decoration: underline; }
+.sp-sheet-grab, .sp-sheet-only { display: none; }
+
+/* Facet group (Atlas FacetGroup) */
+.sp-fg { margin-bottom: 26px; }
+.sp-fg-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.sp-fg-t {
+  margin: 0;
+  font: 400 10.5px/1.3 var(--sp-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sp-faint);
+}
+.sp-fg-clear,
+.sp-fg-more {
+  font: 400 11.5px var(--sp-mono);
+  color: var(--sp-accent-text);
+  text-decoration: none;
+}
+.sp-fg-clear:hover,
+.sp-fg-more:hover { color: var(--sp-accent-deep); text-decoration: underline; }
+.sp-fg-more { display: inline-block; margin-top: 12px; }
+.sp-fg-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sp-fo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--sp-sec);
+  text-decoration: none;
+}
+.sp-fo:hover { color: var(--sp-ink); text-decoration: none; }
+.sp-fo.is-active { color: var(--sp-ink); }
+.sp-fbox {
+  width: 17px;
+  height: 17px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid var(--sps-box);
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+.sp-fo:hover .sp-fbox { border-color: var(--sp-accent); }
+.sp-fo.is-active .sp-fbox { background: var(--sp-accent); border-color: var(--sp-accent); }
+.sp-fo.is-active .sp-fbox::after { content: "\2713"; color: #fff; font-size: 12px; line-height: 1; }
+/* Atlas: .facet-option:focus-within .facet-box -- the ring goes on the box. */
+.sp-fo:focus-visible { outline: none; }
+.sp-fo:focus-visible .sp-fbox { outline: 2px solid var(--sp-accent); outline-offset: 2px; }
+.sp-fl { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.sp-fc { font: 400 11.5px var(--sp-mono); color: var(--sp-faint); }
+.sp-fg-empty { margin: 0; font-size: 13px; color: var(--sp-faint); }
+
+/* ── Controls row (search + sort), Atlas .spark-controls ── */
+.search-form {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.sp-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.sp-search { position: relative; flex: 1; min-width: 220px; }
+.sp-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  font-size: 15px;
+  line-height: 1;
+  pointer-events: none;
+}
+.sp-search input {
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px 12px 38px;
+  border: 1px solid var(--sp-field);
+  border-radius: 6px;
+  font: 400 14.5px/1.4 var(--sp-body);
+  color: var(--sp-ink);
+  background: #fff;
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+.sp-search input::placeholder { color: var(--sp-faint); } /* Atlas #8a8a8a fails AA */
+.sp-search input:focus { border-color: var(--sp-accent); outline: 2px solid var(--sp-accent); outline-offset: 1px; }
+/* Visible only on keyboard focus (Bootstrap .visually-hidden-focusable). */
+.sp-search-btn:focus {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 4px;
+  font: 600 13px var(--sp-display);
+  color: #fff;
+  background: var(--sp-ink);
+}
+.sp-sort { display: flex; gap: 8px; margin: 0; }
+.sp-sortsel {
+  padding: 12px 14px;
+  border: 1px solid var(--sp-field);
+  border-radius: 6px;
+  font: 400 14px/1.4 var(--sp-body);
+  color: var(--sps-ink-2);
+  background-color: #fff;
+  cursor: pointer;
+}
+.sp-sortsel:focus-visible { outline: 2px solid var(--sp-accent); outline-offset: 2px; }
+.sp-sort-go {
+  padding: 0 14px;
+  border: 1px solid var(--sp-field);
+  border-radius: 6px;
+  background: #fff;
+  font: 400 13px var(--sp-mono);
+}
+
+/* Result count, Atlas mono line under the controls. Order only inside the
+   search form: home and topic index reuse .sp-count in their own rows. */
+.search-form > .sp-count { order: 2; }
+.sp-count {
+  margin: 0 0 18px;
+  font: 400 12px var(--sp-mono);
+  color: var(--sp-faint);
+}
+
+/* Active-filter pills and the phone Filters chip (Atlas .spark-chip). */
+.search-form > .sp-chiprail { order: 1; }
+.sp-chiprail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: -10px 0 16px;
+}
+.sp-chiprail:not(:has(.on)) { display: none; }
+.sp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  padding: 7px 13px;
+  border: 1px solid #dcdcdc;
+  border-radius: 20px;
+  background: #fff;
+  font: 400 12px/1 var(--sp-mono);
+  letter-spacing: 0.02em;
+  color: var(--sp-sec);
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sp-chip.on { background: var(--sp-ink); border-color: var(--sp-ink); color: #fff; }
+.sp-chip.on:hover { background: #000; color: #fff; text-decoration: none; }
+.sp-chip-x { font-size: 14px; opacity: 0.75; }
+.sp-chip-filter {
+  display: none;
+  border-color: var(--sp-accent);
+  color: var(--sp-accent-text);
+  font-weight: 600;
+}
+.sp-chip:focus-visible { outline: 2px solid var(--sp-accent); outline-offset: 2px; }
+
+/* CKAN's "Please try another search." under an empty result (Atlas empty state). */
+.search-form ~ .extra {
+  margin: 0;
+  padding: 80px 0;
+  text-align: center;
+  font-size: 15px;
+  color: var(--sp-faint);
+}
+
+/* Add-dataset button for editors. */
+.sp-primary-action { display: flex; justify-content: flex-end; margin: 0 0 16px; }
+.sp-primary-action .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 4px;
+  font: 600 14px var(--sp-display);
+  color: #fff;
+  background: var(--sp-ink);
+}
+.sp-primary-action .btn:hover { background: #000; color: #fff; }
+
+/* ── Dataset grid + card (Atlas .spark-grid / .spark-card-a) ── */
+.dataset-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.dataset-list > li {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.sp-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--sp-line);
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.sp-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sp-shadow-hover);
+  border-color: var(--sp-field);
+  color: inherit;
+  text-decoration: none;
+}
+.sp-card:focus-visible { outline: 2px solid var(--sp-accent); outline-offset: 2px; }
+
+/* Striped placeholder thumb (Atlas lib/shared.tsx Thumb, no-image branch). */
+.sp-thumb {
+  --a: 90deg;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef1f0;
+  background: repeating-linear-gradient(var(--a),
+    color-mix(in oklab, var(--c) 16%, #fff) 0 14px,
+    color-mix(in oklab, var(--c) 7%, #fff) 14px 28px);
+}
+.dataset-list > li:nth-child(4n+2) .sp-thumb { --a: 120deg; }
+.dataset-list > li:nth-child(4n+3) .sp-thumb { --a: 150deg; }
+.dataset-list > li:nth-child(4n) .sp-thumb { --a: 180deg; }
+.sp-thumb::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 80% 10%, color-mix(in oklab, var(--c) 30%, transparent), transparent 60%);
+}
+.sp-thumb-label {
+  position: relative;
+  z-index: 1;
+  max-width: calc(100% - 24px);
+  padding: 4px 9px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.7);
+  font: 400 11px var(--sp-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--c) 70%, #1a1a1a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-feat {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--sp-accent);
+  font: 600 10px/1.5 var(--sp-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #08110f;
+}
+
+.sp-dcard .sp-card-body,
+.dataset-list .sp-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 14px 15px 16px;
+}
+.sp-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 9px;
+}
+.sp-dcard .sp-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--c); }
+.sp-meta-t {
+  flex: 1;
+  min-width: 0;
+  font: 400 10.5px/1.35 var(--sp-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sp-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Atlas StatePills (amber = draft/private, red = deleted). */
+.sp-flag {
+  flex-shrink: 0;
+  padding: 1px 7px;
+  border: 1px solid #f3e2b3;
+  border-radius: 999px;
+  background: #fdf3dd;
+  font: 600 10px/1.5 var(--sp-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8a5f00;
+}
+.sp-flag-bad { border-color: #f1c6c2; background: #fbeceb; color: #b3261e; }
+.sp-dcard .sp-card-title,
+.dataset-list .sp-card-title {
+  margin: 0 0 8px;
+  font: 700 17.5px/1.2 var(--sp-display);
+  letter-spacing: -0.01em;
+  color: var(--sp-ink);
+  overflow-wrap: anywhere;
+}
+/* No flex:1 here: a stretched clamp box shows part of a 4th line. The
+   footer's margin-top:auto takes the slack instead. */
+.sp-excerpt {
+  margin: 0 0 14px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--sp-faint);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sp-card-foot {
+  margin-top: auto;
+  padding-top: 13px;
+  border-top: 1px solid var(--sp-line-soft);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--sps-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Pager (ckan/lib/pagination.py: .pagination-wrapper > ul.pagination) ── */
+.pagination-wrapper { margin-top: 36px; }
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pagination .page-item > a,
+.pagination .page-item > span,
+.pagination li > a {
+  display: grid;
+  place-items: center;
+  min-width: 38px;
+  height: 38px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--sp-field);
+  border-radius: 6px !important;
+  background: #fff;
+  font: 400 12.5px var(--sp-mono);
+  color: var(--sps-ink-2);
+  text-decoration: none;
+  box-shadow: none;
+}
+.pagination li > a:hover { border-color: var(--sp-ink); color: var(--sp-ink); background: #fff; }
+.pagination .page-item:not(:first-child) > .page-link { margin-left: 0; } /* Bootstrap -1px */
+/* (0,3,1): beats Bootstrap's .page-item.active .page-link (0,3,0). */
+.pagination .page-item.active > .page-link,
+.pagination .page-item.active > span { background: var(--sp-ink); border-color: var(--sp-ink); color: #fff; }
+.pagination .disabled > a { color: var(--sp-faint); border-color: var(--sp-line); pointer-events: none; }
+.pagination .page-item:not(.active) > .page-link:focus { background: #fff; color: var(--sp-ink); box-shadow: none; }
+.pagination li > a:focus-visible { outline: 2px solid var(--sp-accent); outline-offset: 2px; box-shadow: none; }
+
+/* ── <=900px: one column; filters become Atlas's bottom sheet ──
+   CKAN main.js toggles body.filters-modal from .show-filters / .hide-filters.
+   Without JS (no html.js) the filters simply stack above the results.
+   ponytail: Atlas uses an inline collapsible at 601-900px and the sheet only
+   below 600; one sheet for both keeps it to CKAN's existing toggle. */
+@media (max-width: 900px) {
+  .wrapper.sp-results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding-top: 4px;
+  }
+  .wrapper.sp-results > .secondary {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    margin: 0;
+    order: 0;
+    z-index: auto; /* CKAN's z-index:1 would make the grid item a stacking context under the cards */
+  }
+  .js .wrapper.sp-results { gap: 0; } /* the aside is empty: its filters are the fixed sheet */
+  .js .main .wrapper.sp-results .filters {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    padding: 0;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.45);
+    animation: sp-fade 0.18s ease;
+  }
+  .js body.filters-modal .main .wrapper.sp-results .filters { display: block; }
+  .js .main .wrapper.sp-results .filters > .sp-filters {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 82vh;
+    overflow-y: auto;
+    padding: 12px 18px 22px;
+    border-radius: 20px 20px 0 0;
+    background: #fff;
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.18);
+    animation: sp-sheet-up 0.24s ease;
+  }
+  .js .sp-sheet-grab {
+    display: block;
+    width: 38px;
+    height: 4px;
+    border-radius: 3px;
+    background: #d8d8d8;
+    margin: 2px auto 12px;
+  }
+  .js .sp-sheet-only { display: inline-block; }
+  /* CKAN pins .hide-filters absolutely at 60% opacity inside the modal. */
+  .js body.filters-modal .wrapper.sp-results .filters .hide-filters { position: static; opacity: 1; }
+  .js .sp-filters-head { margin-bottom: 16px; }
+  .js .sp-filters-t { font-size: 18px; }
+  .js .sp-filters-act { font-size: 13px; }
+  .js .sp-chiprail { display: flex; }
+  .js .sp-chip-filter { display: inline-flex; }
+  .sp-chiprail { margin-top: -10px; }
+}
+
+@media (max-width: 600px) {
+  .wrapper.sp-results { padding-bottom: 64px; }
+  .sp-controls { gap: 8px; margin-bottom: 20px; }
+  .sp-search { min-width: 0; }
+  .sp-sortsel { max-width: 132px; padding: 12px 10px; }
+  .dataset-list { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .dataset-list .sp-card { border-radius: 14px; }
+}
+
+@keyframes sp-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sp-sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-card { transition: none; }
+  .sp-card:hover { transform: none; }
+  .js .main .wrapper.sp-results .filters,
+  .js .main .wrapper.sp-results .filters > .sp-filters { animation: none; }
+}

@@ -1,0 +1,30 @@
+{#
+An organization as an Atlas card: initials tile (or its logo), name,
+description and dataset count.
+
+organization - An organization dict.
+#}
+{% set url = h.url_for(organization.type ~ '.read', id=organization.name) %}
+{% set name = organization.display_name or organization.name %}
+{% block item %}
+<li class="media-item">
+  {% block item_inner %}
+    <a class="sp-card sp-org-card" href="{{ url }}">
+      <div class="sp-card-body">
+        {% if organization.image_display_url %}
+          <img class="sp-org-tile" src="{{ organization.image_display_url }}" alt="" width="44" height="44">
+        {% else %}
+          {# Monogram from words that start with a letter or digit ("Analyze Boston (external)" -> AB); 2 letters like Atlas's client tile. #}
+          {% set ns = namespace(s='') %}{% for w in name.split() if w[0].isalnum() %}{% set ns.s = ns.s ~ w[0] %}{% endfor %}
+          <span class="sp-org-tile" aria-hidden="true">{{ ns.s[:2]|upper or name[:1]|upper }}</span>
+        {% endif %}
+        <p class="sp-meta"><span class="sp-meta-t">{{ ungettext('{num} dataset', '{num} datasets', organization.package_count or 0).format(num=organization.package_count or 0) }}</span></p>
+        <h2 class="sp-card-title">{{ name }}</h2>
+        {% if organization.description %}
+          <p class="sp-excerpt">{{ h.markdown_extract(organization.description, extract_length=160) }}</p>
+        {% endif %}
+      </div>
+    </a>
+  {% endblock %}
+</li>
+{% endblock %}

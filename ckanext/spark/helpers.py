@@ -2,7 +2,6 @@
 
 import logging
 import time
-from datetime import datetime
 
 from ckan.plugins import toolkit
 
@@ -98,24 +97,12 @@ def all_datasets():
     )
 
 
-def featured_datasets():
-    return _cached(
-        "featured_datasets",
-        lambda: _datasets(fq="tags:featured", sort="metadata_modified desc"),
-        [],
-    )
-
-
-def popular_datasets():
-    return _cached(
-        "popular_datasets",
-        lambda: _datasets(sort="views_recent desc"),
-        [],
-    )
-
-
 def _refresh_topic_counts():
-    """Ask Solr how many datasets sit in each group. One query, no dataset bodies."""
+    """Ask Solr how many datasets sit in each group. One query, no dataset bodies.
+
+    The same response carries the total number of datasets, which the homepage
+    shows too, so it is kept rather than paid for with a second query.
+    """
     result = toolkit.get_action("package_search")(
         {},
         {
@@ -131,7 +118,16 @@ def _refresh_topic_counts():
     )
     # Missing on a brand-new site with an empty index.
     items = result.get("search_facets", {}).get("groups", {}).get("items", [])
-    return {item["name"]: item["count"] for item in items}
+    return {
+        "total": result.get("count", 0),
+        "groups": {item["name"]: item["count"] for item in items},
+    }
+
+
+def _topic_summary():
+    return _cached(
+        "topic_counts", _refresh_topic_counts, {"total": 0, "groups": {}}
+    )
 
 
 def topic_counts():
@@ -144,7 +140,15 @@ def topic_counts():
     incident. It removes the query from the hot path so it cannot cause the next
     one, and that is all it claims.
     """
-    return _cached("topic_counts", _refresh_topic_counts, {})
+    return _topic_summary()["groups"]
+
+
+def dataset_count():
+    """Total number of datasets the visitor can see, from the topic-count query.
+
+    Shares that cached query, so showing it costs no Solr call of its own.
+    """
+    return _topic_summary()["total"]
 
 
 def topics():
@@ -161,19 +165,9 @@ def topics():
     ]
 
 
-def format_date(value):
-    """Format CKAN's ISO timestamp for compact display."""
-    if not value:
-        return ""
-    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    return f"{parsed:%B} {parsed.day}, {parsed.year}"
-
-
 def get_helpers():
     return {
         "spark_all_datasets": all_datasets,
-        "spark_featured_datasets": featured_datasets,
-        "spark_popular_datasets": popular_datasets,
         "spark_topics": topics,
-        "spark_format_date": format_date,
+        "spark_dataset_count": dataset_count,
     }

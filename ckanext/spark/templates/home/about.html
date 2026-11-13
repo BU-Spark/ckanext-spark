@@ -1,0 +1,42 @@
+{% ckan_extends %}
+
+{% block toolbar %}
+  {% snippet 'snippets/spark_intro.html',
+    eyebrow=_('About'),
+    title=_('Open data from BU Spark! projects'),
+    lede=_('Data@Spark is where Spark! publishes the datasets its student teams produce and gather, so the next team, partner or researcher can start from them.') %}
+{% endblock %}
+
+{% block wrapper_class %} sp-page sp-about-page{% endblock %}
+
+{#
+A site_about set in the admin config wins, as in CKAN. Otherwise this is the
+default copy, laid out like an Atlas project page: body paragraphs, then
+ruled sections with a mono label and chips.
+#}
+{% block about %}
+  {% if g.site_about %}
+    <div class="sp-prose">{{ h.render_markdown(g.site_about) }}</div>
+  {% else %}
+    <div class="sp-prose">
+      <p>{{ _('BU Spark! is a technology incubator and experiential learning lab for student-led computational and data-driven projects at Boston University. Teams work with nonprofits, government agencies, newsrooms and researchers, and many of those projects create data worth keeping: transcriptions, scraped records, cleaned public files and survey results.') }}</p>
+      <p>{{ _('Each dataset here comes from one of those projects. It is filed under one or more topics, the same ones the Atlas project gallery uses, and under the organization that published it.') }}</p>
+    </div>
+    <section class="sp-section">
+      <h2 class="sp-section-label">{{ _('Using the catalog') }}</h2>
+      <ul class="sp-chips">
+        <li><a class="sp-chip" href="{{ h.url_for(h.default_package_type() ~ '.search') }}">{{ _('Search all datasets') }}</a></li>
+        <li><a class="sp-chip" href="{{ h.url_for(h.default_group_type('group') ~ '.index') }}">{{ _('Browse by topic') }}</a></li>
+        <li><a class="sp-chip" href="{{ h.url_for(h.default_group_type('organization') ~ '.index') }}">{{ _('Browse by organization') }}</a></li>
+        <li><a class="sp-chip" href="{{ h.url_for('api.get_api', ver=3) }}">{{ _('Use the CKAN API') }}</a></li>
+      </ul>
+    </section>
+    <section class="sp-section">
+      <h2 class="sp-section-label">{{ _('Spark! projects') }}</h2>
+      <p>{{ _('The projects behind these datasets, and many more, are in the Atlas project gallery.') }}</p>
+      <ul class="sp-chips">
+        <li><a class="sp-chip" href="https://atlas.buspark.io">{{ _('Open Atlas') }} &rarr;</a></li>
+      </ul>
+    </section>
+  {% endif %}
+{% endblock %}

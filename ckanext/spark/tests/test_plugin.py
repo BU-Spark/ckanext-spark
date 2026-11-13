@@ -63,13 +63,12 @@ def test_plugin():
 def test_homepage_renders(app):
     response = app.get("/")
     assert response.status_code == 200
-    assert "Data@Spark" in response.text
-    assert 'src="/images/data_spark_logo.png"' in response.text
+    assert 'class="sp-mast"' in response.text
+    assert 'src="/images/spark-logo.png"' in response.text
     assert 'id="field-main-search"' in response.text
-    assert 'id="tab-featured"' in response.text
-    assert "View featured datasets" in response.text
+    assert "/css/tokens.css" in response.text
 
-    logo = app.get("/images/data_spark_logo.png")
+    logo = app.get("/images/spark-logo.png")
     assert logo.status_code == 200
     assert logo.content_type == "image/png"
 
@@ -78,12 +77,24 @@ def test_homepage_renders(app):
 @pytest.mark.usefixtures("with_plugins")
 def test_primary_navigation_does_not_promote_organizations(app):
     response = app.get("/")
-    primary_navigation = response.text.split(
-        '<div class="main-navbar', 1
-    )[1].split("</div>", 1)[0]
+    primary_navigation = response.text.split('<nav class="sp-nav"', 1)[1].split(
+        "</nav>", 1
+    )[0]
 
     assert 'href="/dataset/"' in primary_navigation
     assert 'href="/group/"' in primary_navigation
     assert 'href="/about"' in primary_navigation
     assert 'href="/organization/"' not in primary_navigation
     assert "Organizations" not in primary_navigation
+
+
+def test_topics_facet_leads_and_is_renamed():
+    from ckanext.spark.plugin import topics_first
+
+    facets = {"organization": "Organizations", "groups": "Groups", "tags": "Tags"}
+
+    result = topics_first(facets)
+
+    assert list(result) == ["groups", "organization", "tags"]
+    assert result["groups"] == "Topics"
+    assert topics_first({"tags": "Tags"}) == {"tags": "Tags"}

@@ -1,0 +1,10 @@
+{% ckan_extends %}
+
+{# A CSS grid lays the cards out; CKAN's masonry module would absolutely position them. #}
+{% block organization_list %}
+<ul class="media-grid sp-grid sp-org-grid">
+  {% for organization in organizations %}
+    {% snippet "organization/snippets/organization_item.html", organization=organization, position=loop.index, show_capacity=show_capacity %}
+  {% endfor %}
+</ul>
+{% endblock %}

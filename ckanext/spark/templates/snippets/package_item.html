@@ -1,0 +1,53 @@
+{#
+A dataset as an Atlas gallery card (Atlas Gallery.tsx grid card). Used by the
+homepage, dataset search, and topic and organization pages (all of them render
+package_list.html). Atlas mapping: discipline -> topic group, term -> last
+updated, partner -> organization, the striped placeholder -> file formats.
+
+package        - A package dict (a search result is enough; no extra calls).
+item_class     - The class name to use on the list item.
+#}
+{% set title = package.title or package.name %}
+{% set notes = h.markdown_extract(package.notes, extract_length=180) %}
+{% set topic = package.groups[0] if package.groups else none %}
+{% set formats = h.dict_list_reduce(package.resources, 'format') if package.resources else [] %}
+{% set featured = 'featured' in (package.tags or [])|map(attribute='name')|list %}
+
+{% block package_item %}
+  <li class="{{ item_class or 'dataset-item' }}">
+    {% block content %}
+      <a class="sp-card sp-dcard" href="{{ h.url_for(package.type ~ '.read', id=package.name) }}" data-topic="{{ topic.name if topic }}">
+        <div class="sp-thumb">
+          <span class="sp-thumb-label">{{ formats[:3]|join(' · ') if formats else _('Dataset') }}</span>
+          {% if featured %}<span class="sp-feat">&#9733; {{ _('Featured') }}</span>{% endif %}
+        </div>
+        <div class="sp-card-body">
+          <div class="sp-meta">
+            <span class="sp-dot" aria-hidden="true"></span>
+            <span class="sp-meta-t">
+              {%- if topic %}{{ topic.display_name or topic.title or topic.name }}{% if package.groups|length > 1 %} +{{ package.groups|length - 1 }}{% endif %}{% else %}{{ _('Dataset') }}{% endif -%}
+              {%- if package.metadata_modified %} · {{ h.render_datetime(package.metadata_modified, '%b %Y') }}{% endif -%}
+            </span>
+            {% if package.private %}<span class="sp-flag">{{ _('Private') }}</span>{% endif %}
+            {% if package.get('state', '').startswith('draft') %}
+              <span class="sp-flag">{{ _('Draft') }}</span>
+            {% elif package.get('state', '').startswith('deleted') %}
+              <span class="sp-flag sp-flag-bad">{{ _('Deleted') }}</span>
+            {% endif %}
+          </div>
+          {% block heading %}
+            <h3 class="sp-card-title">{{ title|truncate(80) }}</h3>
+          {% endblock %}
+          {% block notes %}
+            <p class="sp-excerpt{{ ' is-empty' if not notes }}">
+              {{ notes or h.humanize_entity_type('package', package.type, 'no description') or _('There is no description for this dataset') }}
+            </p>
+          {% endblock %}
+          {% if package.organization %}
+            <div class="sp-card-foot">{{ package.organization.title or package.organization.name }}</div>
+          {% endif %}
+        </div>
+      </a>
+    {% endblock %}
+  </li>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% ckan_extends %}
+
+{% block wrapper_class %} sp-page sp-error-page{% endblock %}
+
+{# Atlas not-found.tsx: mono code, display headline, grey line, one dark button. #}
+{% block primary %}
+  <div class="primary sp-error" role="main">
+    <p class="sp-error-code">{{ _('Error') }} {{ code }}</p>
+    <h1 class="sp-error-title">{{ name or _('Something went wrong') }}</h1>
+    <div class="sp-error-text">{{ content }}</div>
+    {% block login_redirect %}
+      {% if show_login_redirect_link %}
+        <p class="sp-error-text">{{ _("You might need to login to access this page.") }} <a href="{{ h.url_for('user.login') }}">{{ _("Click here to login") }}</a></p>
+      {% endif %}
+    {% endblock %}
+    <p class="sp-error-actions">
+      <a class="sp-error-btn" href="{{ h.url_for(h.default_package_type() ~ '.search') }}">{{ _('Search datasets') }} &rarr;</a>
+      <a class="sp-error-link" href="{{ h.url_for('home.index') }}">{{ _('Back to the homepage') }}</a>
+    </p>
+  </div>
+{% endblock %}
