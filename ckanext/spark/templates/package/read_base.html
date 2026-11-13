@@ -1,14 +1,43 @@
 {% ckan_extends %}
-{% block head_extras -%}
-{% endblock -%}
-{% block package_social %}
-    {% snippet "snippets/social.html", pkg=pkg %}
-  {% endblock %}
-{% block package_license %}
-  {% endblock %}
 
-{% block secondary_content %}
-  {{ super() }}
-  {% snippet "snippets/topics_list.html", groups=pkg.groups %}
+{# Atlas detail layout hook: dataset.css lays out .sp-detail-wrap as one centred column. #}
+{% block wrapper_class %} sp-detail-wrap{% endblock %}
+
+{#
+CKAN's Dataset / Groups tab strip only matters to editors (the dataset's topics
+are already in the eyebrow), so visitors get Atlas's clean detail column.
+#}
+{% block page_header %}
+  {% if h.check_access('package_update', {'id': pkg.id}) %}
+    <header class="sp-detail-head">
+      <ul class="sp-tabs">{{ self.content_primary_nav() }}</ul>
+      <div class="sp-head-action">{{ self.content_action() }}</div>
+    </header>
+  {% endif %}
 {% endblock %}
 
+{#
+Below the column (Atlas has no rail): license + follow. The organization moved
+into the header as Atlas's client block and topics into the eyebrow
+(package/read.html); CKAN's info box, org box and social links are dropped.
+#}
+{% block secondary_content %}
+  {% block secondary_help_content %}{% endblock %}
+  {% block package_organization %}{% endblock %}
+
+  {% block package_license %}
+    <section class="sp-side-section">
+      <h2 class="sp-label">{{ _('License') }}</h2>
+      <p class="sp-side-text">{% snippet "snippets/license.html", pkg_dict=pkg, text_only=True %}</p>
+    </section>
+  {% endblock %}
+
+  {% block package_info %}
+    {% if current_user.is_authenticated %}
+      {# id=package-info: the follow button's hx-target; CKAN swaps package/snippets/info.html in here. #}
+      <section class="sp-side-section sp-follow" id="package-info">
+        {% snippet 'snippets/follow_button.html', am_following=am_following, obj_type='dataset', obj_id=pkg.id, anchor_type='package' %}
+      </section>
+    {% endif %}
+  {% endblock %}
+{% endblock %}

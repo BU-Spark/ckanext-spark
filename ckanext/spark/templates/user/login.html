@@ -1,0 +1,28 @@
+{% ckan_extends %}
+
+{#
+Atlas login (app/login/LoginClient.tsx): one centred 440px column, mono
+eyebrow, display headline, grey lede, the form, a small grey footnote.
+CKAN's register / forgot-password sidebar boxes become links in the footnote.
+#}
+{% block toolbar %}{% endblock %}
+{% block wrapper_class %} sp-page sp-login-page{% endblock %}
+{% block secondary %}{% endblock %}
+
+{% block primary %}
+  <div class="primary sp-login" role="main">
+    <p class="sp-login-eyebrow">BU Spark!</p>
+    <h1 class="sp-login-title">{% block page_heading %}{{ _('Log in to Data@Spark') }}{% endblock %}</h1>
+    <p class="sp-login-lede">{{ _('Sign in to publish and manage datasets. Every public dataset can be browsed and downloaded without an account.') }}</p>
+    {% block form %}
+      {% snippet "user/snippets/login_form.html", error_summary=error_summary %}
+    {% endblock %}
+    <p class="sp-login-foot">
+      <a href="{{ h.url_for('user.request_reset') }}">{{ _('Forgot your password?') }}</a>
+      {% if h.check_access('user_create') %}
+        <span aria-hidden="true">&middot;</span>
+        <a href="{{ h.url_for('user.register') }}">{{ _('Create an account') }}</a>
+      {% endif %}
+    </p>
+  </div>
+{% endblock %}

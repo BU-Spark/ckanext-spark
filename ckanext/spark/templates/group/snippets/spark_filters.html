@@ -1,0 +1,28 @@
+{#
+Atlas "Filters" column for topic and organization pages. Same markup as
+package/search.html's, so search.css skins all three alike (sidebar above
+900px, bottom sheet below). Snippets get no caller context, hence the args.
+
+fields_grouped, facet_titles, search_facets - from the read view
+extras    - url params every facet link must keep ({'id': group id})
+clear_url - this page with every facet removed
+#}
+{% set active = namespace(n=0) %}
+{% for field, values in (fields_grouped or {}).items() %}{% set active.n = active.n + values|length %}{% endfor %}
+<div class="filters">
+  <div class="sp-filters">
+    <span class="sp-sheet-grab" aria-hidden="true"></span>
+    <div class="sp-filters-head">
+      <h2 class="sp-filters-t">{{ _('Filters') }}</h2>
+      <span class="sp-filters-acts">
+        {% if active.n %}
+          <a class="sp-filters-act" href="{{ clear_url }}">{{ _('Clear') }} ({{ active.n }})</a>
+        {% endif %}
+        <button type="button" class="hide-filters sp-filters-act sp-sheet-only">{{ _('Done') }}</button>
+      </span>
+    </div>
+    {% for facet in facet_titles %}
+      {% snippet 'snippets/facet_list.html', title=facet_titles[facet], name=facet, extras=extras, search_facets=search_facets, hide_empty=true %}
+    {% endfor %}
+  </div>
+</div>

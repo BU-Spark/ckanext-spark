@@ -1,0 +1,22 @@
+{% ckan_extends %}
+
+{# CKAN says "Groups"; this site calls them Topics. #}
+{% block subtitle %}{{ group_dict.display_name }} {{ g.template_title_delimiter }} {{ _('Topics') }}{% endblock %}
+
+{# Topic name and description lead the page instead of a sidebar info box. #}
+{% block toolbar %}
+  {% snippet 'snippets/spark_intro.html',
+    eyebrow=_('Topic'),
+    eyebrow_url=h.url_for(group_type ~ '.index'),
+    title=group_dict.display_name,
+    lede=h.markdown_extract(group_dict.description, extract_length=300) if group_dict.description else '',
+    stats=[(group_dict.package_count or 0, ungettext('dataset', 'datasets', group_dict.package_count or 0))] %}
+{% endblock %}
+
+{# Atlas has no tab strip: the Datasets / Members / About tabs and Manage button
+   are kept for people who can edit the topic only. #}
+{% block page_header %}
+  {% if h.check_access('group_update', {'id': group_dict.id}) %}{{ super() }}{% endif %}
+{% endblock %}
+
+{% block secondary_content %}{% endblock %}

@@ -1,0 +1,36 @@
+{#
+Atlas intro band: mono eyebrow, display headline, grey lede, optional stats
+and round logo on the right.
+
+eyebrow      - small label above the headline
+eyebrow_url  - optional link for the eyebrow (acts as a breadcrumb back up)
+title        - the page's h1
+lede         - optional sentence under the headline (plain text)
+stats        - optional list of (number, label) pairs
+logo         - show the big round Spark logo on the right
+#}
+<section class="sp-intro{{ ' sp-intro-hero' if logo }}">
+  <div class="sp-intro-copy">
+    {% if eyebrow %}
+      <p class="sp-eyebrow">
+        {%- if eyebrow_url %}<a href="{{ eyebrow_url }}">{{ eyebrow }}</a>{% else %}{{ eyebrow }}{% endif -%}
+      </p>
+    {% endif %}
+    <h1>{{ title }}</h1>
+    {% if lede %}<p class="sp-lede">{{ lede }}</p>{% endif %}
+  </div>
+  {% if logo or stats %}
+    <div class="sp-intro-right">
+      {% if logo %}
+        <img class="sp-intro-logo" src="{{ h.url_for_static('/images/spark-logo.png') }}" alt="" width="120" height="120">
+      {% endif %}
+      {% if stats %}
+        <div class="sp-stats">
+          {% for number, label in stats %}
+            <div><span class="n">{{ number }}</span> <span class="t">{{ label }}</span></div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>

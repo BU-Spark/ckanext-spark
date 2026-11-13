@@ -1,0 +1,25 @@
+/* Data@Spark design tokens -- lifted from Atlas (spark-portfolio/atlas/app/globals.css)
+   so the catalog and the project gallery read as one product. Every other
+   stylesheet in this folder uses these variables; do not hard-code colours. */
+:root {
+  --sp-accent: #0fa392;       /* Atlas brand teal: borders, rules, focus rings only (3.15:1 on white) */
+  --sp-accent-text: #0b7f72;  /* 4.89:1 on white: accent text and accent-filled buttons with white text */
+  --sp-accent-deep: #096b60;  /* hover/pressed */
+  --sp-accent-wash: #e7f6f4;  /* tinted backgrounds (pills, active facet) */
+  --sp-ink: #16191c;
+  --sp-sec: #55595e;
+  --sp-faint: #6b6f75;        /* smallest grey that still passes AA on white */
+  --sp-line: #e6e6e6;
+  --sp-line-soft: #f1f1f1;
+  --sp-field: #d8d8d8;
+  --sp-bg: #ffffff;
+  --sp-bg-soft: #f7f9f8;
+  --sp-display: "Space Grotesk", system-ui, sans-serif;
+  --sp-body: "IBM Plex Sans", system-ui, sans-serif;
+  --sp-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --sp-radius: 10px;
+  --sp-radius-sm: 6px;
+  --sp-shadow-hover: 0 10px 26px rgba(0, 0, 0, 0.1);
+  --sp-col: 1340px;           /* max content width (Atlas .wrap) */
+  --sp-gutter: 40px;          /* Atlas side padding; 16px at <=600px, set in shell.css */
+}

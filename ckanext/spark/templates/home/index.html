@@ -1,6 +1,128 @@
 {% ckan_extends %}
-{% block subtitle %}{{ _("DATA@SPARK!") }}{% endblock %}
 
+{% block subtitle %}{{ _('Data Catalog') }}{% endblock %}
+
+{#
+Atlas public gallery (spark-portfolio/atlas/components/Gallery.tsx): intro
+band, then a Filters sidebar (every topic, with counts) beside a search box,
+a mono result count and a grid of recently updated datasets.
+
+Every Solr-backed value here comes from the cached helpers in helpers.py
+(anonymous visitors only, fails closed; see ckanext-spark#7). Do not add a
+direct package_search call to this template.
+#}
 {% block primary_content %}
-{% snippet 'snippets/layout.html' %}
+  {% set dataset_type = h.default_package_type() %}
+  {% set search_url = h.url_for(dataset_type ~ '.search') %}
+  {% set datasets = h.spark_all_datasets() %}
+  {% set topics = h.spark_topics() %}
+  {% set total = h.spark_dataset_count() %}
+  {# Not 'Most viewed' (views_recent): no deployment loads ckanext-tracking, so view counts are all 0. #}
+  {% set collections = [
+    (_('Featured'), h.url_for(dataset_type ~ '.search', tags='featured')),
+    (_('Recently updated'), h.url_for(dataset_type ~ '.search', sort='metadata_modified desc')),
+    (_('By organization'), h.url_for(h.default_group_type('organization') ~ '.index')),
+  ] %}
+
+  <div role="main" class="sp-home">
+    <div class="container">
+      {% snippet 'snippets/spark_intro.html',
+        eyebrow=_('Open data from Spark! projects'),
+        title=_('Datasets from student-built work at Boston University'),
+        lede=_('Browse, search and download the data produced and gathered by BU Spark! projects, filed by topic and by the organization that made it.'),
+        stats=[(total, ungettext('dataset', 'datasets', total)), (topics|length, _('topics'))],
+        logo=true %}
+
+      <div class="sp-body">
+        <aside class="sp-side" aria-label="{{ _('Filters') }}">
+          {# Tablet only (<=900px): Atlas's collapsed "Filters" toggle. #}
+          <button type="button" class="sp-side-toggle" aria-expanded="false" aria-controls="sp-home-filters"
+                  onclick="var o=this.getAttribute('aria-expanded')!=='true';this.setAttribute('aria-expanded',o);this.nextElementSibling.classList.toggle('is-open',o)">
+            <span>{{ _('Filters') }}</span><span aria-hidden="true">&#9662;</span>
+          </button>
+          <div class="sp-side-body" id="sp-home-filters">
+            <h2 class="sp-side-title">{{ _('Filters') }}</h2>
+            <section class="sp-fg">
+              <h3 class="sp-fg-t">{{ _('Topics') }}</h3>
+              <ul class="sp-fg-rows">
+                {% for topic in topics %}
+                  <li>
+                    {# Full taxonomy stays visible, but an empty topic is not a dead link (Atlas avoids "dead 0" facets). #}
+                    {% if topic.count %}
+                    <a class="sp-fo" href="{{ h.url_for(dataset_type ~ '.search', groups=topic.name) }}">
+                    {% else %}
+                    <span class="sp-fo is-empty" aria-disabled="true">
+                    {% endif %}
+                      <span class="sp-fbox" aria-hidden="true"></span>
+                      <span class="sp-fl">{{ topic.title }}</span>
+                      <span class="sp-fc">{{ topic.count }}</span>
+                    {% if topic.count %}</a>{% else %}</span>{% endif %}
+                  </li>
+                {% endfor %}
+              </ul>
+            </section>
+            <section class="sp-fg">
+              <h3 class="sp-fg-t">{{ _('Collections') }}</h3>
+              <ul class="sp-fg-rows">
+                {% for label, url in collections %}
+                  <li><a class="sp-fo" href="{{ url }}"><span class="sp-fbox" aria-hidden="true"></span><span class="sp-fl">{{ label }}</span></a></li>
+                {% endfor %}
+              </ul>
+            </section>
+          </div>
+        </aside>
+
+        <div class="sp-main">
+          {# Atlas has no submit button: Enter submits a single-field form. #}
+          <form class="sp-controls" method="get" action="{{ search_url }}" role="search">
+            <div class="sp-search">
+              <span class="sp-search-icon" aria-hidden="true">&#8981;</span>
+              <input id="field-main-search" type="search" name="q" autocomplete="off"
+                     aria-label="{{ _('Search datasets') }}"
+                     placeholder="{{ _('Search datasets, topics, organizations…') }}">
+            </div>
+          </form>
+
+          {# Phone only (<=600px): Atlas's quick-filter chip rail replaces the sidebar. #}
+          <nav class="sp-home-rail" aria-label="{{ _('Quick filters') }}">
+            <a class="sp-home-chip sp-home-chip-filter" href="{{ search_url }}">&#9881; {{ _('All filters') }}</a>
+            {% for label, url in collections %}
+              <a class="sp-home-chip" href="{{ url }}">{{ label }}</a>
+            {% endfor %}
+            {% for topic in topics if topic.count %}
+              <a class="sp-home-chip" href="{{ h.url_for(dataset_type ~ '.search', groups=topic.name) }}">{{ topic.title }}</a>
+            {% endfor %}
+          </nav>
+
+          <div class="sp-count-row">
+            <p class="sp-home-count">
+              {{ ungettext('{num} dataset', '{num} datasets', total).format(num=total) }}
+              {%- if datasets %} · {{ _('recently updated') }}{% endif %}
+            </p>
+            {% if datasets %}<a class="sp-more" href="{{ search_url }}">{{ _('View all') }} &rarr;</a>{% endif %}
+          </div>
+
+          {% if datasets %}
+            <ul class="dataset-list sp-grid">
+              {% for package in datasets %}
+                {% snippet 'snippets/package_item.html', package=package %}
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="sp-empty">
+              {% if total %}
+                {# Count and grid come from separate cached queries; the grid's can fail alone. #}
+                <p>{{ _('Recent datasets could not be loaded.') }} <a href="{{ search_url }}">{{ _('Browse all') }}</a></p>
+              {% else %}
+                <p>{{ _('No datasets published yet.') }}</p>
+              {% endif %}
+              {% if not total and h.check_access('package_create') %}
+                <a class="sp-empty-cta" href="{{ h.url_for(dataset_type ~ '.new') }}">{{ _('Add the first dataset') }}</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

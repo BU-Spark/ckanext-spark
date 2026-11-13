@@ -1,0 +1,55 @@
+{% ckan_extends %}
+
+{# Same Atlas detail layout as the dataset page (see dataset.css .sp-detail-wrap). #}
+{% block wrapper_class %} sp-detail-wrap sp-res-wrap{% endblock %}
+
+{#
+CKAN wraps the resource header in role="complementary", which hides the page's
+real heading from landmark navigation; label the section by its h1 instead.
+#}
+{% block resource %}
+  <section class="module module-resource" aria-labelledby="sp-res-title">
+    {{ self.resource_inner() }}
+  </section>
+{% endblock %}
+
+{# Actions move under the lede (Atlas puts its buttons after the text); rendered in resource_content. #}
+{% block resource_actions %}{% endblock %}
+
+{% block resource_content %}
+  <p class="sp-eyebrow">
+    <span class="sp-dot" aria-hidden="true"></span>
+    <a href="{{ h.url_for(pkg.type ~ '.read', id=pkg.name) }}">{{ h.dataset_display_name(pkg) }}</a>
+  </p>
+  {% block resource_read_title %}<h1 class="sp-title" id="sp-res-title" title="{{ h.resource_display_name(res) }}">{{ h.resource_display_name(res) | truncate(80) }}</h1>{% endblock %}
+  <p class="sp-meta">
+    <span class="sp-fmt" data-format="{{ (res.format or 'data').lower() }}">{{ res.format or res.mimetype or _('Data') }}</span>
+    {%- if res.last_modified or res.created -%}
+      <span>{{ _('Updated') }} {{ h.render_datetime(res.last_modified or res.created) }}</span>
+    {%- endif -%}
+  </p>
+  {% block resource_read_url %}
+    {% if res.url and h.is_url(res.url) %}
+      <p class="sp-url">{{ _('URL:') }} <a class="resource-url-analytics" href="{{ res.url }}" title="{{ res.url }}">{{ res.url }}</a></p>
+    {% elif res.url %}
+      <p class="sp-url">{{ _('URL:') }} {{ res.url }}</p>
+    {% endif %}
+  {% endblock %}
+  <div class="prose notes sp-lede" property="rdfs:label">
+    {% if res.description %}
+      {{ h.render_markdown(res.description) }}
+    {% elif pkg.notes %}
+      <p>{{ h.markdown_extract(h.get_translated(pkg, 'notes'), extract_length=300) }}</p>
+    {% endif %}
+  </div>
+  {% set acts = self.resource_actions_inner() %}
+  {% if acts | trim %}<ul class="sp-actions sp-actions-lg">{{ acts }}</ul>{% endif %}
+{% endblock %}
+
+{# CKAN puts social share links here; the dataset page dropped them, so show the license instead. #}
+{% block resource_license %}
+  <section class="sp-side-section">
+    <h2 class="sp-label">{{ _('License') }}</h2>
+    <p class="sp-side-text">{% snippet "snippets/license.html", pkg_dict=pkg, text_only=True %}</p>
+  </section>
+{% endblock %}

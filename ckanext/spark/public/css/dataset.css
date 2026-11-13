@@ -1,0 +1,571 @@
+/* dataset.css -- dataset + resource pages as Atlas's detail view
+   (spark-portfolio/atlas/components/ProjectView.tsx, list rows from Gallery.tsx,
+   .tagpill from app/globals.css). Values are Atlas's; greys Atlas uses below AA
+   (#8a8a8a, #9a9a9a, #a0a0a0) map to --sp-faint, accent text to --sp-accent-text.
+   Everything is scoped to .sp-detail-wrap (set via block wrapper_class in
+   package/read_base.html and package/resource_read.html). */
+
+/* Local tokens: Atlas greys with no shared --sp-* equivalent. */
+.sp-detail-wrap {
+  --sp-ds-body: #3a3f44;     /* Atlas body copy on detail pages */
+  --sp-ds-hair: #ececec;     /* Atlas section rule / list border */
+  --sp-ds-rowsep: #f2f2f2;   /* Atlas list row separator */
+  --sp-ds-chip: #2a2f33;     /* Atlas chip text */
+  --sp-ds-chip-bg: #fafafa;
+  --sp-ds-chip-line: #dcdcdc;
+}
+
+/* ---- Layout: one centred column, no rail (ProjectView: maxWidth 760, padding 28px 40px 80px,
+   border-box, so 680px of content; the side padding is #content's gutter). CKAN puts the
+   aside before .primary in the DOM, so order sends it below. ---- */
+.row.wrapper.sp-detail-wrap {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap; /* Bootstrap .row wraps; a multi-line column sizes to its widest child */
+  align-items: stretch; /* CKAN sets flex-start on .wrapper */
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 28px 0 80px;
+  min-height: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.sp-detail-wrap::before,
+.sp-detail-wrap::after { display: none; }
+.sp-detail-wrap > * {
+  width: auto;
+  max-width: none;
+  padding: 0;
+  margin: 0;
+  float: none;
+  min-width: 0;
+}
+.sp-detail-wrap > .secondary { order: 2; margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--sp-ds-hair); }
+/* Breadcrumb + flash sit in the same column (Atlas's back link is inside it). */
+#content:has(> .sp-detail-wrap) > .toolbar,
+#content:has(> .sp-detail-wrap) > .flash-messages { max-width: 680px; margin-left: auto; margin-right: auto; }
+
+.sp-detail-wrap .module,
+.sp-detail-wrap .module-resource {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.sp-detail-wrap .module-content,
+.sp-detail-wrap .module > .module-content:nth-child(2n) { padding: 0; }
+
+.sp-detail-wrap a:focus-visible,
+.sp-detail-wrap button:focus-visible {
+  outline: 2px solid var(--sp-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- Editor tab strip (only rendered for editors) ---- */
+.sp-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sp-ds-hair);
+}
+.sp-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sp-tabs a {
+  font-family: var(--sp-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sp-sec);
+  text-decoration: none;
+}
+.sp-tabs i { display: none; }
+.sp-tabs .active a { color: var(--sp-ink); box-shadow: inset 0 -2px 0 var(--sp-accent); padding-bottom: 4px; }
+.sp-head-action .btn {
+  font-family: var(--sp-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sp-accent-text);
+  background: none;
+  border: 1px solid color-mix(in oklab, var(--sp-accent) 35%, #fff);
+  border-radius: 999px;
+  padding: 4px 11px;
+}
+
+/* ---- Header: eyebrow, title, meta, lede (ProjectView) ---- */
+.sp-detail-wrap .sp-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font-family: var(--sp-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sp-accent-text);
+}
+.sp-detail-wrap .sp-eyebrow a:link,
+.sp-detail-wrap .sp-eyebrow a:visited { color: inherit; text-decoration: none; }
+.sp-detail-wrap .sp-eyebrow a:hover { text-decoration: underline; }
+.sp-detail-wrap .sp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c, var(--sp-accent));
+  flex-shrink: 0;
+}
+.sp-detail-wrap .sp-title {
+  font-family: var(--sp-display);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--sp-ink);
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+.sp-detail-wrap .sp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 0;
+  margin: 0 0 22px;
+  font-family: var(--sp-mono);
+  font-size: 12px;
+  color: var(--sp-faint);
+}
+.sp-detail-wrap .sp-meta > span + span::before { content: "\00b7"; margin: 0 8px; }
+.sp-detail-wrap .sp-meta > .sp-fmt + span::before { content: none; }
+.sp-detail-wrap .sp-meta > .sp-fmt { margin-right: 10px; }
+.sp-detail-wrap .sp-lede {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--sp-ds-body);
+  margin: 0 0 26px;
+  max-width: 720px;
+}
+.sp-detail-wrap .sp-lede p { margin: 0 0 12px; }
+.sp-detail-wrap .sp-lede > :last-child { margin-bottom: 0; }
+.sp-detail-wrap .sp-lede:empty { display: none; }
+
+.sp-detail-wrap .sp-flags { display: flex; flex-wrap: wrap; gap: 6px; margin: -4px 0 16px; }
+/* Pill look comes from search.css (Atlas amber StatePill). */
+
+/* ---- Sections + mono labels ---- */
+.sp-detail-wrap .sp-label,
+.sp-detail-wrap #dataset-resources > h2,
+.sp-detail-wrap .additional-info > h3,
+.sp-detail-wrap .module-resource ~ .primary h2,
+.sp-detail-wrap .resources > .module-heading {
+  display: block;
+  margin: 0 0 12px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font-family: var(--sp-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sp-faint);
+}
+.sp-detail-wrap .resources > .module-heading i { display: none; }
+
+.sp-detail-wrap #dataset-resources {
+  padding-top: 24px;
+  border-top: 1px solid var(--sp-ds-hair);
+}
+.sp-detail-wrap .sp-section,
+.sp-detail-wrap .additional-info { margin-top: 30px; }
+.sp-detail-wrap #dataset-resources .empty { color: var(--sp-faint); font-size: 14.5px; }
+
+/* ---- Resource list = Atlas list view rows ---- */
+.sp-detail-wrap .resource-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--sp-ds-hair);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+.sp-detail-wrap .resource-item {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: 13px;
+  row-gap: 4px;
+  align-items: center;
+  padding: 15px 20px;
+  margin: 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--sp-ds-rowsep);
+  transition: background 0.12s ease;
+}
+.sp-detail-wrap .resource-item:last-child { border-bottom: 0; }
+.sp-detail-wrap .resource-item:hover { background: var(--sp-bg-soft); }
+.sp-detail-wrap .resource-item > .sp-fmt { grid-row: 1 / span 2; grid-column: 1; }
+.sp-detail-wrap .resource-item > .heading {
+  grid-column: 2;
+  align-self: end;
+  font-family: var(--sp-display);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.25;
+  color: var(--sp-ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.sp-detail-wrap .resource-item > .heading:hover { color: var(--sp-accent-text); }
+.sp-detail-wrap .resource-item > .description {
+  grid-column: 2;
+  align-self: start;
+  margin: 0;
+  min-height: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--sp-sec);
+}
+.sp-detail-wrap .resource-item > .sp-actions { grid-column: 3; grid-row: 1 / span 2; }
+
+/* Format tile: Atlas Thumb placeholder (stripes + radial glow + label), 54x40 list size. */
+.sp-fmt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 5px;
+  background:
+    radial-gradient(120% 90% at 80% 10%, color-mix(in oklab, var(--sp-accent) 30%, transparent), transparent 60%),
+    repeating-linear-gradient(120deg, color-mix(in oklab, var(--sp-accent) 16%, #fff) 0 14px, color-mix(in oklab, var(--sp-accent) 7%, #fff) 14px 28px);
+  font-family: var(--sp-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--sp-accent) 70%, #1a1a1a);
+}
+.resource-item > .sp-fmt {
+  width: 54px;
+  height: 40px;
+  padding: 0 3px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--sp-accent) 12%, transparent);
+}
+.sp-meta > .sp-fmt { height: 22px; padding: 0 8px; border-radius: 3px; }
+
+/* ---- Buttons (ProjectView action buttons) ---- */
+.sp-detail-wrap .sp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sp-detail-wrap .sp-btn,
+.sp-detail-wrap .sp-actions-lg .btn,
+.sp-detail-wrap .sp-follow .btn,
+.sp-detail-wrap .secondary > .module-content .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+  font-family: var(--sp-display);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #fff;
+  background: var(--sp-ink);
+  border: 1px solid var(--sp-ink);
+  border-radius: 4px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.sp-detail-wrap .sp-btn:hover { background: #000; color: #fff; }
+.sp-detail-wrap .sp-btn-accent,
+.sp-detail-wrap .sp-actions-lg .btn-primary {
+  background: var(--sp-accent-text);
+  border-color: var(--sp-accent-text);
+}
+.sp-detail-wrap .sp-btn-accent:hover,
+.sp-detail-wrap .sp-actions-lg .btn-primary:hover { background: var(--sp-accent-deep); border-color: var(--sp-accent-deep); color: #fff; }
+.sp-detail-wrap .sp-btn-ghost,
+.sp-detail-wrap .sp-actions-lg .btn-default,
+.sp-detail-wrap .sp-follow .btn,
+.sp-detail-wrap .secondary > .module-content .btn {
+  color: var(--sp-ink);
+  background: #fff;
+  border-color: var(--sp-ds-chip-line);
+}
+.sp-detail-wrap .sp-btn-ghost:hover,
+.sp-detail-wrap .sp-actions-lg .btn-default:hover,
+.sp-detail-wrap .sp-follow .btn:hover,
+.sp-detail-wrap .secondary > .module-content .btn:hover { color: var(--sp-ink); background: var(--sp-bg-soft); border-color: var(--sp-faint); }
+
+/* Resource page: full-size Atlas buttons (padding 13px 22px, 14.5px) after the lede. */
+.sp-detail-wrap .sp-actions-lg { gap: 12px; margin: 0 0 34px; }
+.sp-detail-wrap .sp-actions-lg .btn { padding: 13px 22px; font-size: 14.5px; }
+.sp-detail-wrap .sp-actions-lg .btn-group { display: inline-flex; }
+.sp-detail-wrap .sp-actions-lg .dropdown-toggle { padding-left: 12px; padding-right: 12px; }
+
+/* ---- Tags = Atlas chips ---- */
+.sp-detail-wrap .tags { margin: 0; }
+.sp-detail-wrap .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.sp-detail-wrap .tag-list li { margin: 0; }
+.sp-detail-wrap .tag-list .tag {
+  display: inline-block;
+  margin: 0;
+  font-family: var(--sp-mono);
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--sp-ds-chip);
+  background: var(--sp-ds-chip-bg);
+  border: 1px solid var(--sp-ds-chip-line);
+  border-radius: 3px;
+  padding: 5px 10px;
+  box-shadow: none;
+  text-decoration: none;
+}
+.sp-detail-wrap .tag-list .tag:hover {
+  color: var(--sp-accent-deep); /* accent-text is 4.43:1 on this tint */
+  background: color-mix(in oklab, var(--sp-accent) 6%, #fafafa);
+  border-color: color-mix(in oklab, var(--sp-accent) 35%, #dcdcdc);
+}
+
+/* ---- Additional info = key/value rows (Atlas "Where it ran" rows) ---- */
+.sp-detail-wrap .table {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-collapse: collapse;
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: transparent;
+  --bs-table-accent-bg: transparent;
+}
+.sp-detail-wrap .table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.sp-detail-wrap .table > :not(caption) > * > * {
+  padding: 11px 0;
+  background: none;
+  box-shadow: none;
+  border: 0;
+  border-bottom: 1px solid var(--sp-ds-rowsep);
+  vertical-align: baseline;
+  width: auto;
+}
+.sp-detail-wrap .table > :not(:first-child) { border-top: 0; } /* Bootstrap's 2px currentColor rule above tbody */
+.sp-detail-wrap .table tbody > tr:first-child > * { border-top: 1px solid var(--sp-ds-hair); }
+/* Atlas run rows: key min-width 92, 10px gap, value right after it. */
+.sp-detail-wrap .table tbody th {
+  width: 1%;
+  min-width: 92px;
+  white-space: nowrap;
+  padding-right: 10px;
+  font-family: var(--sp-mono);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--sp-ink);
+}
+.sp-detail-wrap .table tbody td {
+  font-size: 14.5px;
+  color: var(--sp-ds-body);
+  overflow-wrap: anywhere;
+}
+.sp-detail-wrap .table a { color: var(--sp-accent-text); }
+.sp-detail-wrap .table .toggle-seperator { display: none; }
+/* .table-bordered gives every <tr> 1px currentColor borders; they win over a borderless cell. */
+.sp-detail-wrap .table > :not(caption) > * { border-width: 0; }
+.sp-detail-wrap .table .toggle-show td { text-align: left; border-bottom: 0; }
+.sp-detail-wrap .table .toggle-show a {
+  font-family: var(--sp-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--sp-accent-text);
+}
+
+/* ---- Resource page body ---- */
+.sp-detail-wrap .sp-url {
+  display: flex;
+  gap: 6px;
+  margin: -10px 0 18px;
+  font-family: var(--sp-mono);
+  font-size: 12px;
+  color: var(--sp-faint);
+  white-space: nowrap;
+}
+.sp-detail-wrap .sp-url a {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--sp-accent-text);
+}
+.sp-detail-wrap .module-resource .resource-view,
+.sp-detail-wrap .module-resource .nav-tabs { margin-top: 0; }
+.sp-detail-wrap .data-viewer-info {
+  padding: 22px 20px;
+  border: 1px dashed var(--sp-ds-chip-line);
+  border-radius: 8px;
+  background: var(--sp-ds-chip-bg);
+  font-size: 14px;
+  color: var(--sp-sec);
+}
+.sp-detail-wrap .data-viewer-info p { margin: 0; }
+.sp-detail-wrap .data-viewer-info p + p { margin-top: 8px; }
+/* Datastore's data dictionary sits above Additional information in .primary. */
+.sp-res-wrap > .primary .module-content + .module-content { margin-top: 30px; }
+.sp-detail-wrap .accordion-button {
+  padding: 10px 14px;
+  font-family: var(--sp-mono);
+  font-size: 12px;
+  color: var(--sp-ink);
+  background: var(--sp-ds-chip-bg);
+  box-shadow: none;
+}
+.sp-detail-wrap .accordion-item { border-color: var(--sp-ds-hair); }
+.sp-res-wrap > .primary { margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--sp-ds-hair); }
+
+/* ---- Sections below the column (license, follow, other resources) ---- */
+.sp-detail-wrap .secondary .sp-side-section,
+.sp-detail-wrap .secondary .module-narrow { margin: 0 0 26px; padding: 0; background: none; border: 0; }
+.sp-detail-wrap .secondary > :last-child { margin-bottom: 0; }
+.sp-side-text {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--sp-sec);
+}
+.sp-detail-wrap .sp-side-text a { color: var(--sp-accent-text); }
+
+/* Organization = Atlas ClientBlock (frame radius 10, row gap 14 padding 16px 18px, 44px tile). */
+.sp-detail-wrap .sp-org {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--sp-accent) 7%, #fafafa);
+  border: 1px solid color-mix(in oklab, var(--sp-accent) 18%, #eee);
+  text-decoration: none;
+}
+.sp-detail-wrap .sp-org-tile {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--sp-line);
+  font-family: var(--sp-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--sp-accent-text);
+}
+.sp-detail-wrap .sp-org-text { min-width: 0; display: flex; flex-direction: column; }
+.sp-detail-wrap .sp-org-label {
+  font-family: var(--sp-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sp-faint);
+}
+.sp-detail-wrap .sp-org-name {
+  margin-top: 2px;
+  font-family: var(--sp-display);
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.2;
+  color: var(--sp-ink);
+  overflow-wrap: anywhere;
+}
+.sp-detail-wrap .sp-org:hover .sp-org-name { color: var(--sp-accent-text); }
+
+/* Resource page rail: CKAN's resources nav as Atlas facet rows. */
+.sp-detail-wrap .resources .nav-simple { margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.sp-detail-wrap .resources .nav-simple > li { padding: 0; border: 0; font-size: 14px; line-height: 1.35; background: none; }
+.sp-detail-wrap .resources .nav-item > a {
+  display: block;
+  margin: 0;
+  padding: 6px 0 6px 12px;
+  border-left: 2px solid var(--sp-ds-hair);
+  color: var(--sp-sec);
+  background: none;
+  font-size: 14px;
+  text-decoration: none;
+}
+.sp-detail-wrap .resources .nav-item > a:hover { color: var(--sp-ink); background: none; }
+.sp-detail-wrap .resources .nav-item.active > a,
+.sp-detail-wrap .resources .nav-item.active > a:hover {
+  color: var(--sp-ink);
+  font-weight: 600;
+  background: none;
+  border-left-color: var(--sp-accent);
+}
+.sp-detail-wrap .resources .nav-item.active > a::before { content: none; }
+.sp-detail-wrap .secondary > .module-content { padding: 0 0 26px; }
+
+/* Follow button (editors/logged-in): CKAN re-renders package/snippets/info.html into it. */
+.sp-follow .heading,
+.sp-follow .nums { display: none; }
+.sp-follow .module,
+.sp-follow .module-content { padding: 0; margin: 0; border: 0; background: none; }
+
+/* ---- Responsive (Atlas .spark-detail at 600) ---- */
+@media (max-width: 600px) {
+  .row.wrapper.sp-detail-wrap { padding: 20px 0 64px; }
+  .sp-detail-wrap .sp-title { font-size: 26px; }
+  .sp-detail-wrap .resource-item {
+    grid-template-columns: 54px minmax(0, 1fr);
+    padding: 14px 16px;
+  }
+  .sp-detail-wrap .resource-item > .sp-actions { grid-column: 1 / -1; grid-row: auto; margin-top: 10px; }
+  .sp-detail-wrap .resource-item > .sp-actions > .sp-btn { flex: 1 1 auto; justify-content: center; }
+  .sp-detail-wrap .sp-actions-lg { flex-direction: column; }
+  .sp-detail-wrap .sp-actions-lg > li,
+  .sp-detail-wrap .sp-actions-lg .btn-group,
+  .sp-detail-wrap .sp-actions-lg .btn { width: 100%; justify-content: center; }
+  /* Datastore split button: Download fills, the format caret keeps its size. */
+  .sp-detail-wrap .sp-actions-lg .btn-group > .btn:first-child { flex: 1 1 auto; width: auto; }
+  .sp-detail-wrap .sp-actions-lg .btn-group > .dropdown-toggle { flex: 0 0 auto; width: auto; }
+  .sp-detail-wrap .table tbody th { width: 35%; white-space: normal; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-detail-wrap .resource-item { transition: none; }
+}
+
+/* CKAN leaves an empty floated .actions box; the buttons render under the lede instead. */
+.sp-res-wrap .module-resource .actions { display: none; }

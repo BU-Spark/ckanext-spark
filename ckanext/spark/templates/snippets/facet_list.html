@@ -1,0 +1,55 @@
+{#
+A search facet as an Atlas filter group: mono label, checkbox-style rows with
+the count right-aligned. Rows stay links (CKAN facets are GET links), so this
+works without JS. Arguments are CKAN's; see core snippets/facet_list.html.
+#}
+{% block facet_list %}
+  {% set hide_empty = hide_empty or false %}
+  {% with items = items or h.get_facet_items_dict(name, search_facets) %}
+    {% if items or not hide_empty %}
+      {% block facet_list_item %}
+        <section class="sp-fg">
+          {% block facet_list_heading %}
+            <div class="sp-fg-head">
+              <h3 class="sp-fg-t">{{ title }}</h3>
+              {% if request.args.getlist(name) %}
+                <a class="sp-fg-clear" href="{{ h.remove_url_param(name, extras=extras, alternative_url=alternative_url) }}">{{ _('Clear') }}<span class="visually-hidden"> {{ title }}</span></a>
+              {% endif %}
+            </div>
+          {% endblock %}
+          {% block facet_list_items %}
+            {% with items = items or h.get_facet_items_dict(name, search_facets) %}
+              {% if items %}
+                <nav aria-label="{{ title }}">
+                  <ul class="sp-fg-rows">
+                    {% for item in items %}
+                      {% set href = h.remove_url_param(name, item.name, extras=extras, alternative_url=alternative_url) if item.active else h.add_url_param(new_params={name: item.name}, extras=extras, alternative_url=alternative_url) %}
+                      {% set label = label_function(item) if label_function else item.display_name %}
+                      {% set count = count_label(item['count']) if count_label else ('%d' % item['count']) %}
+                      <li>
+                        <a class="sp-fo{{ ' is-active' if item.active }}" href="{{ href }}"{% if item.active %} aria-current="true"{% endif %}>
+                          <span class="sp-fbox" aria-hidden="true"></span>
+                          <span class="sp-fl">{{ label }}{% if item.active %}<span class="visually-hidden"> ({{ _('selected; select to remove') }})</span>{% endif %}</span>
+                          <span class="sp-fc">{{ count }}</span>
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </nav>
+                {% if h.get_param_int('_%s_limit' % name) %}
+                  {% if h.has_more_facets(name, search_facets) %}
+                    <a class="sp-fg-more" href="{{ h.remove_url_param('_%s_limit' % name, replace=0, extras=extras, alternative_url=alternative_url) }}">{{ _('Show More {facet_type}').format(facet_type=title) }}</a>
+                  {% endif %}
+                {% else %}
+                  <a class="sp-fg-more" href="{{ h.remove_url_param('_%s_limit' % name, extras=extras, alternative_url=alternative_url) }}">{{ _('Show Only Popular {facet_type}').format(facet_type=title) }}</a>
+                {% endif %}
+              {% else %}
+                <p class="sp-fg-empty">{{ _('There are no {facet_type} that match this search').format(facet_type=title) }}</p>
+              {% endif %}
+            {% endwith %}
+          {% endblock %}
+        </section>
+      {% endblock %}
+    {% endif %}
+  {% endwith %}
+{% endblock %}

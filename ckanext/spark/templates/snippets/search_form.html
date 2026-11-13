@@ -1,0 +1,127 @@
+{% ckan_extends %}
+
+{#
+Atlas controls row: one search field (glyph inside, no visible button) and the
+sort select beside it. Enter submits; the button stays for keyboard and screen
+reader users and appears when focused. CKAN's select-switch module submits the
+form when the sort changes; the Go button covers no-JS.
+#}
+{% block search_input %}
+  <div class="sp-controls">
+    <div class="sp-search">
+      <span class="sp-search-icon" aria-hidden="true">&#8981;</span>
+      <input aria-label="{{ placeholder }}" id="field-giant-search" type="search" name="q"
+             value="{{ query }}" autocomplete="off" placeholder="{{ placeholder }}">
+      <button class="sp-search-btn visually-hidden-focusable" type="submit" value="search">{{ _('Search') }}</button>
+    </div>
+    {% if sorting %}
+      <div class="sp-sort control-order-by">
+        <select id="field-order-by" name="sort" class="sp-sortsel" aria-label="{{ _('Order by') }}">
+          {% for label, value in sorting %}
+            {% if label and value %}
+              <option value="{{ value }}"{% if sorting_selected == value %} selected="selected"{% endif %}>{{ label }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        <button class="sp-sort-go js-hide" type="submit">{{ _('Go') }}</button>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{# Rendered inside the controls row above. #}
+{% block search_sortby %}{% endblock %}
+
+{#
+The result count is a mono status line here, as in Atlas, not the page's h1:
+each page that uses this form puts its own h1 in the intro band above it.
+#}
+{% block search_title %}
+  <p class="sp-count" role="status">
+    {% if not error %}
+      {% snippet 'snippets/search_result_text.html', query=query, count=count, type=type %}
+      {#- Atlas empty state: an accent Reset back to the unfiltered page. #}
+      {%- if show_empty and count == 0 %} <a class="sp-filters-act sp-reset" href="{{ request.path }}">{{ _('Reset') }}</a>{% endif %}
+    {% else %}
+      {{ _('Error') }}
+    {% endif %}
+  </p>
+{% endblock %}
+
+{#
+Active filters as removable pills, plus the phone "Filters" chip that opens
+the sidebar sheet (CKAN main.js binds .show-filters). A <button>, not CKAN's
+href-less <a>, so it is reachable by keyboard.
+#}
+{% block search_facets %}
+  {% set n = namespace(active=0) %}
+  {% for field in (facets.fields if facets else {}) %}{% set n.active = n.active + facets.fields[field]|length %}{% endfor %}
+  {# Same condition as the sidebar: no results and no filters means no sheet to open. #}
+  {% if facets and (count or n.active) %}
+    <div class="sp-chiprail">
+      <button type="button" class="show-filters sp-chip sp-chip-filter" aria-expanded="false" aria-controls="sp-filters">&#9881; {{ _('Filters') }}{% if n.active %} ({{ n.active }}){% endif %}</button>
+      {% for field in facets.fields %}
+        {% set search_facets_items = facets.search.get(field)['items'] if facets.search and field in facets.search else [] %}
+        {% for value in facets.fields[field] %}
+          <a class="sp-chip on" href="{{ facets.remove_field(field, value) }}">
+            <span class="visually-hidden">{{ _('Remove filter') }} {{ facets.titles.get(field) }}:</span>
+            {%- if facets.translated_fields and (field,value) in facets.translated_fields -%}
+              {{ facets.translated_fields[(field,value)] }}
+            {%- else -%}
+              {{ h.list_dict_filter(search_facets_items, 'name', 'display_name', value) }}
+            {%- endif %}
+            <span class="sp-chip-x" aria-hidden="true">&times;</span>
+          </a>
+        {% endfor %}
+      {% endfor %}
+    </div>
+    {#
+    Keyboard/AT support for the phone sheet; CKAN main.js only toggles
+    body.filters-modal. Generic over .sp-filters, so it covers the topic and
+    organization sidebars too. Delegated on document: runs after CKAN's own
+    element handlers, so the sheet is already visible when focus moves.
+    #}
+    <script>
+    (function () {
+      var d = document, b = d.body, chip, sheet, head;
+      function open() { return b.classList.contains('filters-modal'); }
+      function close() {
+        b.classList.remove('filters-modal');
+        sheet.removeAttribute('role'); sheet.removeAttribute('aria-modal');
+        chip.setAttribute('aria-expanded', 'false');
+        chip.focus();
+      }
+      function init() {
+        chip = d.querySelector('.sp-chip-filter'); sheet = d.querySelector('.sp-filters');
+        if (!chip || !sheet) return false;
+        head = sheet.querySelector('.sp-filters-t');
+        sheet.id = 'sp-filters';
+        head.id = head.id || 'sp-filters-t'; head.tabIndex = -1;
+        sheet.setAttribute('aria-labelledby', head.id);
+        return true;
+      }
+      d.addEventListener('click', function (e) {
+        if (!sheet && !init()) return;
+        var t = e.target;
+        if (t.closest('.show-filters')) {
+          sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-modal', 'true');
+          chip.setAttribute('aria-expanded', 'true');
+          head.focus();
+        } else if (t.closest('.hide-filters') || (open() && t === sheet.parentNode)) {
+          close(); /* Done (CKAN has already closed it) or the scrim around the sheet */
+        }
+      });
+      d.addEventListener('keydown', function (e) {
+        if (!sheet || !open()) return;
+        if (e.key === 'Escape') { close(); return; }
+        if (e.key !== 'Tab') return;
+        /* ponytail: minimal focus trap - wrap between the heading and the last control */
+        var f = sheet.querySelectorAll('a[href], button, input, select');
+        var last = f[f.length - 1];
+        if (!e.shiftKey && (d.activeElement === last || !sheet.contains(d.activeElement))) { e.preventDefault(); head.focus(); }
+        else if (e.shiftKey && (d.activeElement === head || d.activeElement === f[0])) { e.preventDefault(); last.focus(); }
+      });
+    })();
+    </script>
+  {% endif %}
+{% endblock %}

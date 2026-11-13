@@ -1,0 +1,26 @@
+{% ckan_extends %}
+
+{% block subtitle %}{{ _('Topics') }}{% endblock %}
+
+{% block toolbar %}
+  {% snippet 'snippets/spark_intro.html',
+    eyebrow=_('Browse by topic'),
+    title=_('Topics'),
+    lede=_('Every dataset is filed under one or more of these topics, the same ones Atlas uses for Spark! projects.') %}
+{% endblock %}
+
+{% block wrapper_class %} sp-page sp-topics-page{% endblock %}
+
+{# The eleven topics are fixed in topics.py, so a search box over them is noise:
+   ponytail: count line only; restore CKAN's groups_search_form if topics ever grow past one page. #}
+{# CKAN's hidden <h1>Groups</h1> is outside any block; the intro h1 is the page heading. #}
+{% block primary_content_inner %}
+  {% block groups_search_form %}
+    <p class="sp-count" role="status">{{ ungettext('{num} topic', '{num} topics', page.item_count or 0).format(num=page.item_count or 0) }}</p>
+  {% endblock %}
+  {% block groups_list %}{{ super() }}{% endblock %}
+  {% block page_pagination %}{{ super() }}{% endblock %}
+{% endblock %}
+
+{# CKAN's "What are groups?" help box: the intro above says it for topics. #}
+{% block secondary %}{% endblock %}

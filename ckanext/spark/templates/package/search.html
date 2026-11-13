@@ -1,0 +1,81 @@
+{% ckan_extends %}
+
+{% block toolbar %}
+  {% snippet 'snippets/spark_intro.html',
+    eyebrow=_('Explore the data'),
+    title=h.humanize_entity_type('package', dataset_type, 'page title') or _('Datasets'),
+    lede=_('Search every dataset, or narrow it down by topic, organization, tag or format.') %}
+{% endblock %}
+
+{# Atlas gallery body: 248px filters column + results (search.css, .sp-results). #}
+{% block wrapper_class %} sp-results{% endblock %}
+
+{#
+Same blocks as CKAN's primary_content, minus the module/module-content boxes
+(Atlas has no panel around the results) and with Atlas's sort labels.
+#}
+{% block primary_content %}
+  {% block page_primary_action %}
+    {% if h.check_access('package_create') %}
+      <div class="page_primary_action sp-primary-action">
+        {% snippet 'snippets/add_dataset.html', dataset_type=dataset_type %}
+      </div>
+    {% endif %}
+  {% endblock %}
+  {% block form %}
+    {% set facets = {
+      'fields': fields_grouped,
+      'search': search_facets,
+      'titles': facet_titles,
+      'translated_fields': translated_fields,
+      'remove_field': remove_field }
+    %}
+    {% set sorting = [
+      (_('Relevance'), 'score desc, metadata_modified desc'),
+      (_('Newest first'), 'metadata_modified desc'),
+      (_('A–Z'), 'title_string asc'),
+      (_('Z–A'), 'title_string desc')
+      ]
+    %}
+    {% snippet 'snippets/search_form.html', form_id='dataset-search-form', type=dataset_type, query=q, sorting=sorting, sorting_selected=sort_by_selected, count=page.item_count, placeholder=h.humanize_entity_type('package', dataset_type, 'search placeholder') or _('Search datasets...'), facets=facets, show_empty=request.args, error=query_error, fields=fields %}
+  {% endblock %}
+  {% block package_search_results_list %}
+    {% snippet 'snippets/package_list.html', packages=page.items %}
+  {% endblock %}
+  {% block page_pagination %}
+    {{ page.pager(q=q) }}
+  {% endblock %}
+{% endblock %}
+
+{# The API pointer moves to the footer, which links it on every page. #}
+{% block package_search_results_api %}{% endblock %}
+
+{#
+Atlas "Filters" column. Below 900px CKAN's own main.js turns it into a modal
+(.show-filters adds body.filters-modal, .hide-filters removes it); search.css
+skins that as Atlas's bottom sheet.
+#}
+{% block secondary_content %}
+  {% set active = namespace(n=0) %}
+  {% for field, values in (fields_grouped or {}).items() %}{% set active.n = active.n + values|length %}{% endfor %}
+  {# hide_empty leaves nothing but the heading on a zero-result page. #}
+  {% if page.item_count or active.n %}
+  <div class="filters">
+    <div class="sp-filters">
+      <span class="sp-sheet-grab" aria-hidden="true"></span>
+      <div class="sp-filters-head">
+        <h2 class="sp-filters-t">{{ _('Filters') }}</h2>
+        <span class="sp-filters-acts">
+          {% if active.n %}
+            <a class="sp-filters-act" href="{{ h.url_for(dataset_type ~ '.search', q=q or None, sort=request.args.get('sort')) }}">{{ _('Clear') }} ({{ active.n }})</a>
+          {% endif %}
+          <button type="button" class="hide-filters sp-filters-act sp-sheet-only">{{ _('Done') }}</button>
+        </span>
+      </div>
+      {% for facet in facet_titles %}
+        {% snippet 'snippets/facet_list.html', title=facet_titles[facet], name=facet, search_facets=search_facets, hide_empty=true %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+{% endblock %}

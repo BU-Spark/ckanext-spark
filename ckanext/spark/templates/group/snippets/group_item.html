@@ -1,0 +1,29 @@
+{#
+A topic as an Atlas card: striped thumb in the topic's colour, then name,
+description and dataset count. CKAN's version also lists the topic's datasets
+inside each card; the topic page does that.
+
+group - A group dict.
+#}
+{% set type = group.type or 'group' %}
+{% set url = h.url_for(type ~ '.read', id=group.name) %}
+{% block item %}
+<li class="media-item">
+  {% block item_inner %}
+    <a class="sp-card" href="{{ url }}">
+      <div class="sp-thumb sp-thumb-short" data-topic="{{ group.name }}">
+        <span class="sp-thumb-label">{{ ungettext('{num} dataset', '{num} datasets', group.package_count or 0).format(num=group.package_count or 0) }}</span>
+      </div>
+      <div class="sp-card-body">
+        <h2 class="sp-card-title">{{ group.display_name }}</h2>
+        {% if group.description %}
+          <p class="sp-excerpt">{{ h.markdown_extract(group.description, extract_length=160) }}</p>
+        {% endif %}
+      </div>
+    </a>
+    {% if group.user_member %}
+      <input name="group_remove.{{ group.id }}" value="{{ _('Remove') }}" type="submit" class="btn btn-danger btn-sm media-edit" title="{{ _('Remove dataset from this group') }}"/>
+    {% endif %}
+  {% endblock %}
+</li>
+{% endblock %}
